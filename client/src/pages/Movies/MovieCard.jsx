@@ -6,6 +6,6 @@ const MovieCard = ({ movie }) => {
       <p className="text-xs text-gray-400">{movie.category}</p>
     </div>
   );
-};
+};    
 
 export default MovieCard;
