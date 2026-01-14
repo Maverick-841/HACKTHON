@@ -26,8 +26,7 @@ export default function Genres() {
     }
 
     function handleNext() {
-        console.log("Selected Genres:", selectedItems);
-        alert("Next clicked");
+        navigate('/moviesPage');
     }
 
     function handleBack() {
