@@ -26,11 +26,13 @@ export default function Genres() {
     }
 
     function handleNext() {
-        navigate('/moviesPage');
+        if (selectedItems.length === 0) return;
+        navigate('/webseriesPage');
     }
 
+
     function handleBack() {
-        navigate('/');
+        navigate('/language');
     }
 
     return (
@@ -92,13 +94,18 @@ export default function Genres() {
                     >
                         ← Back
                     </button>
-
                     <button
                         onClick={handleNext}
-                        className="px-8 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-105 transition-all font-medium"
+                        disabled={selectedItems.length === 0}
+                        className={`px-8 py-3 rounded-xl font-medium transition-all
+        ${selectedItems.length > 0
+                                ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-105"
+                                : "bg-white/10 text-white/40 cursor-not-allowed"
+                            }`}
                     >
                         Next →
                     </button>
+
                 </div>
 
             </div>

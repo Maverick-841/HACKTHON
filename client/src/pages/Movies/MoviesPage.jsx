@@ -1,7 +1,7 @@
 import { useState } from "react";
-import FiltersSidebar from "./FiltersSidebar";
 import MoviesGrid from "./MoviesGrid";
 import moviesData from "./moviesData";
+import MoviesFiltersSidebar from "./MoviesFiltersSidebar";
 
 
 const MoviesPage = () => {
@@ -17,7 +17,7 @@ const MoviesPage = () => {
   return (
     <div className="flex">
       {/* Left Sidebar */}
-      <FiltersSidebar
+      <MoviesFiltersSidebar
         selected={selectedCategories}
         setSelected={setSelectedCategories}
       />

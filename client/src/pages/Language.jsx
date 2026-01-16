@@ -29,11 +29,13 @@ export default function Language() {
     }
 
     function handleNext() {
-        navigate('/genres'); 
+        if (selectedItems.length === 0) return;
+        navigate('/genres');
     }
 
+
     function handleBack() {
-        navigate('/'); // go to Home page
+        navigate('/Mode'); // go to Home page
     }
 
     return (
@@ -89,9 +91,8 @@ export default function Language() {
                     ))}
                 </div>
 
-                {/* Bottom Buttons */}
                 <div className="flex justify-between items-center pt-6">
-                    {/* Back Button - LEFT */}
+                    {/* Back Button */}
                     <button
                         onClick={handleBack}
                         className="px-6 py-2 rounded-xl border border-white/30 hover:bg-white/10 transition"
@@ -99,10 +100,15 @@ export default function Language() {
                         ← Back
                     </button>
 
-                    {/* Next Button - RIGHT */}
+                    {/* Next Button */}
                     <button
                         onClick={handleNext}
-                        className="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-pink-500 hover:scale-105 transition-all font-medium"
+                        disabled={selectedItems.length === 0}
+                        className={`px-8 py-3 rounded-xl font-medium transition-all
+            ${selectedItems.length > 0
+                                ? "bg-gradient-to-r from-blue-500 to-pink-500 hover:scale-105"
+                                : "bg-white/10 text-white/40 cursor-not-allowed"
+                            }`}
                     >
                         Next →
                     </button>

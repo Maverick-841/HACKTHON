@@ -11,7 +11,7 @@ const categories = [
   "Emotional"
 ];
 
-const FiltersSidebar = ({ selected, setSelected }) => {
+const MoviesFiltersSidebar = ({ selected, setSelected }) => {
   const handleChange = (category) => {
     if (selected.includes(category)) {
       setSelected(selected.filter(item => item !== category));
@@ -37,4 +37,4 @@ const FiltersSidebar = ({ selected, setSelected }) => {
   );
 };
 
-export default FiltersSidebar;
+export default MoviesFiltersSidebar;

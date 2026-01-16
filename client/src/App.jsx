@@ -11,6 +11,12 @@ import About from './pages/About';
 import Language from './pages/Language';
 import Genres from './pages/Genres';
 import MoviesPage from './pages/Movies/MoviesPage';
+import MusicPage from './pages/Music/MusicPage';
+import BooksPage from './pages/Books/BooksPage';
+import PodCastsPage from './pages/Podcasts/PodCastsPage';
+import AnimePage from './pages/Anime/AnimePage';
+import WebseriesPage from './pages/Webseries/WebseriesPage';
+import Mode from './pages/Mode';
 
 /* ---------- Layouts ---------- */
 
@@ -48,11 +54,17 @@ const App = () => {
 
         {/* WITHOUT Navbar */}
         <Route element={<NoNavbarLayout />}>
+         <Route path="/Mode" element={<Mode />} />
           <Route path="/language" element={<Language />} />
           <Route path="/genres" element={<Genres />} />
           <Route path="/moviesPage" element={<MoviesPage />} />
+          <Route path="/musicPage" element={<MusicPage />} />
+           <Route path="/booksPage" element={<BooksPage />} />
+           <Route path="/podcastsPage" element={<PodCastsPage />} />
+           <Route path="/youtubePage" element={<PodCastsPage />} />
+           <Route path="/animePage" element={<AnimePage />} />
+            <Route path="/webseriesPage" element={<WebseriesPage />} />
         </Route>
-
       </Routes>
     </div>                      
   );
