@@ -4,12 +4,15 @@ import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { ShopContext } from '../context/shopcontext';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export function Login() {
     const [isLogin, setIsLogin] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
-    const { token, setToken, navigate,backendUrl} = useContext(ShopContext);
+    const { token, setToken,backendUrl} = useContext(ShopContext);
+          
+    const navigate = useNavigate()
 
     const [formData, setFormData] = useState({
         email: '',

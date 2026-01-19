@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Globe, Check } from "lucide-react";
+import { Globe } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
+import { useShopContext } from "../context/shopcontext";
+
 
 export default function Language() {
     const [selectedItems, setSelectedItems] = useState([]);
     const navigate = useNavigate();
+    const { updatePreferences } = useShopContext(); // ✅ ADD THIS
 
     const options = [
         { label: "Hindi", code: "IN" },
@@ -19,20 +22,28 @@ export default function Language() {
     ];
 
     function handleSelect(item) {
-        setSelectedItems((prev) =>
-            prev.includes(item)
-                ? prev.filter((i) => i !== item)
-                : [...prev, item]
-        );
+        const newSelection = selectedItems.includes(item)
+            ? selectedItems.filter((i) => i !== item)
+            : [...selectedItems, item];
+
+        setSelectedItems(newSelection);
+
+        // ✅ OPTIONAL: Save to context immediately
+        updatePreferences({ selectedLanguages: newSelection });
     }
 
+    // ✅ MODIFIED THIS FUNCTION
     function handleNext() {
         if (selectedItems.length === 0) return;
-        navigate("/genres");
+
+        // Ensure languages are saved to context
+        updatePreferences({ selectedLanguages: selectedItems });
+
+        navigate("/genres"); // 👈 CHANGED from "/genres" to "/content-type"
     }
 
     function handleBack() {
-        navigate("/Mode");
+        navigate("/mode");
     }
 
     return (
@@ -90,9 +101,7 @@ export default function Language() {
                                     countryCode={code}
                                     style={{ width: "1.5em", height: "1.5em" }}
                                 />
-
                                 <span>{label}</span>
-
                             </button>
                         );
                     })}

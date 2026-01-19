@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useContext } from 'react';
+
+import {Tv, BookOpen, Star, Cpu, ArrowRight, Play, Zap, Activity, Music2,Clapperboard, ScanEye,BrainCircuit, Navigation, Brain, BarChart3 } from 'lucide-react';  // slightly different icons
 import { ShopContext } from '../context/shopcontext';
-import { Music, Tv, BookOpen, Star, Cpu, Compass, TrendingUp, MoveIcon, Sparkles, ArrowRight, Play, Eye, Zap, Navigation, Activity, Music2, Book, Library, Move3D, MoveDiagonal, Film, Clapperboard, BarChart3, ScanEye, Brain, Sparkle, BrainCircuit } from 'lucide-react';  // slightly different icons
 
 export default function Home() {
     const culturalDomains = [
@@ -272,12 +273,12 @@ export default function Home() {
                         transition={{ duration: 0.8 }}
                         className="text-center mb-20"
                     >
-                       <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-  Every Mood Has a World
-</h2>
-<p className="text-xl text-white/60 max-w-3xl mx-auto">
-  Tell us how you feel, and we’ll show you stories, sounds, and ideas that truly connect with you.
-</p>
+                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                            Every Mood Has a World
+                        </h2>
+                        <p className="text-xl text-white/60 max-w-3xl mx-auto">
+                            Tell us how you feel, and we’ll show you stories, sounds, and ideas that truly connect with you.
+                        </p>
 
                     </motion.div>
 
@@ -321,12 +322,11 @@ export default function Home() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
                         className="text-center mb-20"
-                    >
-                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                            Your Cultural Growth Journey
+                    ><h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                            Your Mood-Driven Growth Journey
                         </h2>
                         <p className="text-xl text-white/60 max-w-3xl mx-auto">
-                            From comfort zone to cultural explorer in carefully designed steps
+                            From understanding your emotions to discovering content that shapes your mindset.
                         </p>
                     </motion.div>
 

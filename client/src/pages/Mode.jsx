@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Smile } from "lucide-react";
+import { useShopContext } from "../context/shopcontext";
+
+
 
 export default function Mode() {
     const [selectedMood, setSelectedMood] = useState(null);
     const navigate = useNavigate();
+    const { updatePreferences } = useShopContext(); // ✅ ADD THIS
 
     const moods = [
         { label: "Feeling Low", icon: "😔" },
@@ -14,9 +18,21 @@ export default function Mode() {
         { label: "Just for Fun", icon: "😄" },
     ];
 
+    // ✅ MODIFIED THIS FUNCTION
     function handleNext() {
         if (!selectedMood) return;
+
+        // Save mood to context before navigating
+        updatePreferences({ selectedMood: selectedMood });
+
         navigate("/language"); // 👉 next page
+    }
+
+    // ✅ ADD THIS FUNCTION
+    function handleMoodSelect(moodLabel) {
+        setSelectedMood(moodLabel);
+        // Optionally save immediately when selected
+        updatePreferences({ selectedMood: moodLabel });
     }
 
     function handleBack() {
@@ -51,12 +67,12 @@ export default function Mode() {
                     </div>
                 )}
 
-                {/* Mood Options */}
+                {/* Mood Options - ✅ UPDATED onClick */}
                 <div className="flex flex-wrap justify-center gap-4">
                     {moods.map((mood) => (
                         <button
                             key={mood.label}
-                            onClick={() => setSelectedMood(mood.label)}
+                            onClick={() => handleMoodSelect(mood.label)} // ✅ CHANGED HERE
                             className={`flex items-center gap-3 px-6 py-3 rounded-full border transition-all
                                 ${selectedMood === mood.label
                                     ? "bg-pink-600 border-pink-400 scale-105"
@@ -91,9 +107,7 @@ export default function Mode() {
                     </button>
                 </div>
 
-            </div>    
-
-
+            </div>
         </div>
     );
 }
