@@ -9,7 +9,7 @@ const Settings = () => {
     setIsOfflineMode(cacheService.getOfflineMode());
   }, []);
 
-  const handleToggleOfflineMode = () => {
+  const handleToggleOfflineMode = () => {     
     const newMode = !isOfflineMode;
     setIsOfflineMode(newMode);
     cacheService.setOfflineMode(newMode);
