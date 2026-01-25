@@ -1,115 +1,160 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { bookData } from "./BookData";
+
 import BooksGrid from "./BooksGrid";
 import { useShopContext } from "../../context/shopcontext";
+import { bookData } from "./BookData";
 
 const BooksPage = () => {
+
   const navigate = useNavigate();
   const { userPreferences } = useShopContext();
-  const [selectedCategories, setSelectedCategories] = useState([]);
+
+  /* -----------------------------------
+      LOAD SAVED DATA
+  ----------------------------------- */
+
+  const [selectedCategories, setSelectedCategories] = useState(() => {
+    return JSON.parse(localStorage.getItem("bookCategories")) || [];
+  });
+
   const [filteredBooks, setFilteredBooks] = useState([]);
 
-  const handleFilterChange = (category) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
-  };
+  const activeMood =
+    userPreferences.selectedMood ||
+    localStorage.getItem("selectedMood");
 
-  // Go back to genres selection
-  const handleBackToGenres = () => {
-    navigate('/genres');
-  };
+  /* -----------------------------------
+      SAVE MOOD
+  ----------------------------------- */
 
-  // Apply filters based on user preferences AND category selections
   useEffect(() => {
+    if (userPreferences.selectedMood) {
+      localStorage.setItem(
+        "selectedMood",
+        userPreferences.selectedMood
+      );
+    }
+  }, [userPreferences.selectedMood]);
+
+  /* -----------------------------------
+      SAVE CATEGORIES
+  ----------------------------------- */
+
+  useEffect(() => {
+    localStorage.setItem(
+      "bookCategories",
+      JSON.stringify(selectedCategories)
+    );
+  }, [selectedCategories]);
+
+  /* -----------------------------------
+      BACK BUTTON
+  ----------------------------------- */
+
+  const handleBackToGenres = () => {
+    navigate("/genres");
+  };
+
+  /* -----------------------------------
+      FILTER LOGIC
+  ----------------------------------- */
+
+  useEffect(() => {
+
     let result = [...bookData];
 
-    // 1. Filter by user's selected languages
-    if (userPreferences.selectedLanguages && userPreferences.selectedLanguages.length > 0) {
-      // Filter books by language if language property exists
-      result = result.filter((book) => {
-        // If book has no language property, show it
-        if (!book.language) return true;
-        // Check if book language matches any selected language
-        return userPreferences.selectedLanguages.some(lang =>
-          book.language.toLowerCase().includes(lang.toLowerCase()) ||
-          lang.toLowerCase().includes(book.language.toLowerCase())
-        );
-      });
-    }
-
-    // 2. Filter by selected categories (genres)
+    // FILTER BY CATEGORY
     if (selectedCategories.length > 0) {
-      result = result.filter((b) => selectedCategories.includes(b.category));
+      result = result.filter((book) =>
+        selectedCategories.includes(book.category)
+      );
     }
 
-    // 3. Filter by mood
-    if (userPreferences.selectedMood) {
-      // Map mood to book categories
+    // MOOD TO CATEGORY MAP
+    const moodToCategory = {
 
-      const MoodToCategory = {
-        "Just for Fun": ["Fiction", "Comedy", "Mystery"],
+      "Just for Fun": ["Fiction", "Comedy", "Mystery"],
 
-        "Need Motivation": ["Self-Help", "Biography", "Inspirational"],
+      "Need Motivation": ["Self-Help", "Biography", "Inspirational"],
 
-        "Feeling Low": ["Fiction", "Romance", "Poetry"],
+      "Feeling Low": ["Fiction", "Romance", "Poetry"],
 
-        "Want Focus": ["Non-Fiction", "Educational", "Science"],
+      "Want Focus": ["Non-Fiction", "Educational", "Science"],
 
-        "Want Peace": ["Spirituality", "Meditation", "Nature"]
-      };
+      "Want Peace": ["Spirituality", "Meditation", "Nature"]
 
-      const recommendedCategories = MoodToCategory[userPreferences.selectedMood] || [];
+    };
 
-      if (recommendedCategories.length > 0 && selectedCategories.length === 0) {
-        // If no categories selected, suggest based on mood
-        result = result.filter((b) => recommendedCategories.includes(b.category));
+    // FILTER BY MOOD ONLY IF NO CATEGORY SELECTED
+    if (activeMood && selectedCategories.length === 0) {
+
+      const recommended =
+        moodToCategory[activeMood] || [];
+
+      if (recommended.length > 0) {
+        result = result.filter((book) =>
+          recommended.includes(book.category)
+        );
       }
     }
 
     setFilteredBooks(result);
-  }, [selectedCategories, userPreferences]);
+
+  }, [selectedCategories, activeMood]);
+
+  /* -----------------------------------
+      UI
+  ----------------------------------- */
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
-      {/* Header with Back Button */}
-      <div className="p-6 border-b border-gray-700">
-        <h1 className="text-2xl md:text-3xl font-bold">Book Recommendations</h1>
-        <p className="text-white/60 mt-2">
-          Based on your preferences • {filteredBooks.length} books found
-        </p>
-      </div>
 
-      <div className="flex flex lg:flex-row p-6 gap-6">
+      {/* HEADER */}
+      <div className="p-6 border-b border-gray-700 flex items-center gap-4">
 
 
-        {/* RIGHT GRID */}
-        <div className="flex-1">
-          <BooksGrid books={filteredBooks} />
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold">
+            Book Recommendations
+          </h1>
+
+          <p className="text-white/60 mt-1">
+            Based on your preferences • {filteredBooks.length} books found
+          </p>
         </div>
+
       </div>
 
-      {/* Mobile Preferences Display */}
+      {/* GRID */}
+      <div className="p-6">
+        <BooksGrid books={filteredBooks} />
+      </div>
+
+      {/* MOBILE TAGS */}
       <div className="p-6 border-t border-gray-700 md:hidden">
+
         <div className="flex flex-wrap gap-2">
-          {userPreferences.selectedMood && (
+
+          {activeMood && (
             <span className="px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400 text-sm">
-              Mood: {userPreferences.selectedMood}
+              Mood: {activeMood}
             </span>
           )}
-          {userPreferences.selectedLanguages && userPreferences.selectedLanguages.map((lang, index) => (
+
+          {selectedCategories.map((cat, index) => (
             <span
               key={index}
-              className="px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400 text-sm"
+              className="px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400 text-sm"
             >
-              {lang}
+              {cat}
             </span>
           ))}
+
         </div>
+
       </div>
+
     </div>
   );
 };
