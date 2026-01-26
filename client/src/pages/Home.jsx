@@ -193,7 +193,7 @@ export default function Home() {
                         {/* Embedded YouTube Video (shows on click) */}
                         <div className="mt-8 flex justify-center min-h-[400px]">
                             <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-lg">
-                                <iframe
+                                <iframe                  
                                     width="100%"
                                     height="100%"
                                     src={`https://www.youtube.com/embed/5QOY6OIpbMQ${videoPlayed ? '?autoplay=1&rel=0&modestbranding=1&controls=1' : '?rel=0&modestbranding=1&controls=1'}`}
@@ -203,7 +203,7 @@ export default function Home() {
                                     allowFullScreen
                                     className="w-full h-full object-cover"
                                     style={{ display: 'block' }}
-                                ></iframe>
+                                ></iframe>                     
                                 {!videoPlayed && (
                                     <button
                                         className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/60 transition-colors cursor-pointer z-10"
