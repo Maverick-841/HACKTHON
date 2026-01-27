@@ -187,18 +187,18 @@ export default function Home() {
                                     <Play className="w-6 h-6" />
                                 </div>
                                 <span>Watch How AI Understands You</span>
-                            </button>
+                            </button>                                      
                         </div>
 
                         {/* Embedded YouTube Video (shows on click) */}
                         <div className="mt-8 flex justify-center min-h-[400px]">
                             <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-lg">
                                 <iframe                  
-                                    width="100%"
+                                    width="100%"                     
                                     height="100%"
                                     src={`https://www.youtube.com/embed/5QOY6OIpbMQ${videoPlayed ? '?autoplay=1&rel=0&modestbranding=1&controls=1' : '?rel=0&modestbranding=1&controls=1'}`}
                                     title="How Zesty Works"
-                                    frameBorder="0"
+                                    frameBorder="0"                           
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     allowFullScreen
                                     className="w-full h-full object-cover"
