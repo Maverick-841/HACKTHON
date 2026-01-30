@@ -185,7 +185,7 @@ export default function Home() {
                                 <span>Start With Your Mood</span>
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </button>
-
+                                                                 
                             <button                    
                                 className="group flex items-center space-x-3 text-white/80 hover:text-white transition-colors"
                                 onClick={() => { setVideoPlayed(true); }}
@@ -196,7 +196,8 @@ export default function Home() {
                                 <span>Watch How AI Understands You</span>
                             </button>
                         </div>
-
+                    
+                                                              
                         {/* Embedded YouTube Video (shows on click) */}
                         <div className="mt-8 flex justify-center min-h-[400px]">
                             <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-lg">
@@ -226,7 +227,7 @@ export default function Home() {
                             </div>
                         </div>
                     </motion.div>
-                </div>
+                </div>               
 
                 {/* Floating Cultural Icons */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -241,7 +242,7 @@ export default function Home() {
                                     top: config.position.top,
                                     left: config.position.left,
                                     scale: config.size.scale,
-                                }}
+                                }}              
                                 animate={{
                                     y: [...config.animation.y],
                                     rotate: [...config.animation.rotate],
@@ -256,7 +257,7 @@ export default function Home() {
         w-32 h-32 p-6 
         rounded-full 
         border border-white/10 
-        shadow-lg shadow-black/20 
+        shadow-lg shadow-black/20               
         backdrop-blur-xl 
         bg-[radial-gradient(circle_at_25%_25%,_rgba(255,255,255,0.3)_0%,_rgba(255,255,255,0.05)_50%)]
       "
