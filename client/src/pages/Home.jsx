@@ -170,23 +170,23 @@ export default function Home() {
                         </h1>
 
 
-                    
+                                                
 
                         <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
                             Your mood decides what you watch, listen, and read. Movies, music, web series, and books are handpicked to uplift, inspire, and guide your journey today.
-                        </p>
+                        </p>                  
 
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
                             <button
-                                onClick={handleStartJourney}
+                                onClick={handleStartJourney}                    
                                 className="group bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 px-8 py-4 rounded-2xl text-white font-medium transition-all duration-300 hover:scale-105 flex items-center space-x-2"
                             >
                                 <span>Start With Your Mood</span>
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </button>
 
-                            <button
+                            <button                    
                                 className="group flex items-center space-x-3 text-white/80 hover:text-white transition-colors"
                                 onClick={() => { setVideoPlayed(true); }}
                             >
