@@ -170,7 +170,7 @@ export default function Home() {
                         </h1>
 
 
-
+                    
 
                         <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
                             Your mood decides what you watch, listen, and read. Movies, music, web series, and books are handpicked to uplift, inspire, and guide your journey today.
