@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import MusicGrid from "./MusicGrid";
-import { musicData } from "./MusicData";
 import { useShopContext } from "../../context/shopcontext";
 
 const MusicPage = () => {
@@ -18,7 +17,8 @@ const MusicPage = () => {
     userPreferences.selectedMood ||
     localStorage.getItem("selectedMood");
 
-  const [filteredMusic, setFilteredMusic] = useState([]);
+  const [musicList, setMusicList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   /* -----------------------------
         SAVE MOOD
@@ -42,51 +42,49 @@ const MusicPage = () => {
   };
 
   /* -----------------------------
-        FILTER LOGIC
+        FETCH AI MUSIC
   ----------------------------- */
 
   useEffect(() => {
+    fetchAIMusic();
+  }, []);
 
-    let result = [...musicData];
+  async function fetchAIMusic() {
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/mood/recommend",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mood: activeMood,
+            languages: userPreferences.selectedLanguages,
+            category: "Music"
+          })
+        }
+      );
 
-    // FILTER BY LANGUAGE
-    if (userPreferences.selectedLanguages?.length > 0) {
-      result = result.filter((music) => {
-        if (!music.language) return true;
+      const data = await res.json();
+      setMusicList(data.recommendations);
+      setLoading(false);
 
-        return userPreferences.selectedLanguages.some(
-          (lang) =>
-            music.language.toLowerCase().includes(lang.toLowerCase()) ||
-            lang.toLowerCase().includes(music.language.toLowerCase())
-        );
-      });
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
     }
+  }
 
-    // MOOD → CATEGORY MAP
-    const moodToCategory = {
-      "Need Motivation": ["Workout", "Rock", "Hip-Hop"],
-      "Feeling Low": ["Indie", "Acoustic", "Lo-Fi"],
-      "Want Focus": ["Classical", "Instrumental", "Jazz"],
-      "Want Peace": ["Ambient", "Meditation", "Nature Sounds"],
-      "Just for Fun": ["Pop", "Party", "Dance"]
-    };
+  /* -----------------------------
+        LOADING UI
+  ----------------------------- */
 
-    // APPLY MOOD FILTER
-    if (activeMood) {
-
-      const recommended =
-        moodToCategory[activeMood] || [];
-
-      if (recommended.length > 0) {
-        result = result.filter((m) =>
-          recommended.includes(m.category)
-        );
-      }
-    }
-
-    setFilteredMusic(result);
-
-  }, [activeMood, userPreferences.selectedLanguages]);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Loading AI Music Recommendations...
+      </div>
+    );
+  }
 
   /* -----------------------------
         UI
@@ -96,22 +94,31 @@ const MusicPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
 
       {/* HEADER */}
-      <div className="p-6 border-b border-gray-700">
+      <div className="p-6 border-b border-gray-700 flex justify-between items-center">
 
-        <h1 className="text-2xl md:text-3xl font-bold">
-          Music Recommendations
-        </h1>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold">
+            Music Recommendations
+          </h1>
 
-        <p className="text-white/60 mt-2">
-          Based on your preferences • {filteredMusic.length} tracks found
-        </p>
+          <p className="text-white/60 mt-2">
+            Based on your preferences • {musicList.length} tracks found
+          </p>
+        </div>
+
+        <button
+          onClick={handleBackToGenres}
+          className="px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10"
+        >
+          ← Back
+        </button>
 
       </div>
 
       {/* GRID */}
       <div className="flex flex lg:flex-row p-6 gap-6">
         <div className="flex-1">
-          <MusicGrid musicList={filteredMusic} />
+          <MusicGrid musicList={musicList} />
         </div>
       </div>
 

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import DocumentaryGrid from "./DocumentaryGrid";
-import { DocumentaryData } from "./DocumentaryData";
 import { useShopContext } from "../../context/shopcontext";
 
 const DocumentaryPage = () => {
@@ -18,7 +17,8 @@ const DocumentaryPage = () => {
         userPreferences.selectedMood ||
         localStorage.getItem("selectedMood");
 
-    const [filteredDocs, setFilteredDocs] = useState([]);
+    const [documentaries, setDocumentaries] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     /* -----------------------------
           SAVE MOOD
@@ -42,85 +42,49 @@ const DocumentaryPage = () => {
     };
 
     /* -----------------------------
-          FILTER LOGIC
+          FETCH AI DOCUMENTARIES
     ----------------------------- */
 
     useEffect(() => {
+        fetchAIDocumentaries();
+    }, []);
 
-        let result = [...DocumentaryData];
+    async function fetchAIDocumentaries() {
+        try {
+            const res = await fetch(
+                "http://localhost:5000/api/mood/recommend",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        mood: activeMood,
+                        languages: userPreferences.selectedLanguages,
+                        category: "Documentaries"
+                    })
+                }
+            );
 
-        // FILTER BY LANGUAGE
-        if (userPreferences.selectedLanguages?.length > 0) {
-            result = result.filter((doc) => {
-                if (!doc.language) return true;
+            const data = await res.json();
+            setDocumentaries(data.recommendations);
+            setLoading(false);
 
-                return userPreferences.selectedLanguages.some(
-                    (lang) =>
-                        doc.language.toLowerCase().includes(lang.toLowerCase()) ||
-                        lang.toLowerCase().includes(doc.language.toLowerCase())
-                );
-            });
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
         }
+    }
 
-        // MOOD → CATEGORY MAP
-        const moodToCategory = {
+    /* -----------------------------
+          LOADING UI
+    ----------------------------- */
 
-            "Need Motivation": [
-                "Motivation",
-                "Self Growth",
-                "Business",
-                "Entrepreneurship",
-                "Inspiration"
-            ],
-
-            "Feeling Low": [
-                "Life Balance",
-                "Mental Health",
-                "Wellness",
-                "Hope",
-                "Positivity"
-            ],
-
-            "Want Focus": [
-                "Technology",
-                "Artificial Intelligence",
-                "Science",
-                "Business Tech",
-                "Cyber Security"
-            ],
-
-            "Want Peace": [
-                "Nature",
-                "Meditation",
-                "Relaxation",
-                "Spiritual",
-                "Travel"
-            ],
-
-            "Just for Fun": [
-                "Comedy",
-                "Entertainment",
-                "Gaming",
-                "Film Making"
-            ]
-        };
-
-        // APPLY MOOD FILTER
-        if (activeMood) {
-
-            const recommended =
-                moodToCategory[activeMood] || [];
-
-            if (recommended.length > 0) {
-                result = result.filter((doc) =>
-                    recommended.includes(doc.category)
-                );
-            }
-        }
-
-        setFilteredDocs(result);
-
-    }, [activeMood, userPreferences.selectedLanguages]);
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-white">
+                Loading AI Documentary Recommendations...
+            </div>
+        );
+    }
 
     /* -----------------------------
           UI
@@ -130,21 +94,30 @@ const DocumentaryPage = () => {
         <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
 
             {/* HEADER */}
-            <div className="p-6 border-b border-gray-700">
+            <div className="p-6 border-b border-gray-700 flex justify-between items-center">
 
-                <h1 className="text-2xl md:text-3xl font-bold">
-                    Documentary Recommendations
-                </h1>
+                <div>
+                    <h1 className="text-2xl md:text-3xl font-bold">
+                        Documentary Recommendations
+                    </h1>
 
-                <p className="text-white/60 mt-2">
-                    Based on your preferences • {filteredDocs.length} documentaries found
-                </p>
+                    <p className="text-white/60 mt-2">
+                        Based on your preferences • {documentaries.length} documentaries found
+                    </p>
+                </div>
+
+                <button
+                    onClick={handleBackToGenres}
+                    className="px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10"
+                >
+                    ← Back
+                </button>
 
             </div>
 
             {/* GRID */}
             <div className="p-6">
-                <DocumentaryGrid documentaries={filteredDocs} />
+                <DocumentaryGrid documentaries={documentaries} />
             </div>
 
             {/* MOBILE TAGS */}
@@ -165,12 +138,12 @@ const DocumentaryPage = () => {
                         >
                             {lang}
                         </span>
-                     ))}                      
-                           
+                    ))}
+
                 </div>
-                    
+
             </div>
-                                                   
+
         </div>
     );
 };

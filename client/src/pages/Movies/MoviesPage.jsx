@@ -3,26 +3,30 @@ import { useNavigate } from "react-router-dom";
 
 import MoviesGrid from "./MoviesGrid";
 import { useShopContext } from "../../context/shopcontext";
-import { moviesData } from "./moviesData";
 
 const MoviesPage = () => {
 
   const navigate = useNavigate();
   const { userPreferences } = useShopContext();
 
-  /* -----------------------------
-        LOAD SAVED MOOD
-  ----------------------------- */
+  // -----------------------------
+  // LOAD SAVED MOOD
+  // -----------------------------
 
   const activeMood =
     userPreferences.selectedMood ||
     localStorage.getItem("selectedMood");
 
-  const [filteredMovies, setFilteredMovies] = useState([]);
+  // -----------------------------
+  // STATES
+  // -----------------------------
 
-  /* -----------------------------
-        SAVE MOOD
-  ----------------------------- */
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // -----------------------------
+  // SAVE MOOD
+  // -----------------------------
 
   useEffect(() => {
     if (userPreferences.selectedMood) {
@@ -33,96 +37,67 @@ const MoviesPage = () => {
     }
   }, [userPreferences.selectedMood]);
 
-  /* -----------------------------
-        BACK BUTTON
-  ----------------------------- */
+  // -----------------------------
+  // FETCH AI MOVIES
+  // -----------------------------
+
+  useEffect(() => {
+    fetchAIMovies();
+  }, []);
+
+  async function fetchAIMovies() {
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/mood/recommend",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            mood: activeMood,
+            languages: userPreferences.selectedLanguages,
+            category: "Movies"
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      // Backend sends string JSON → convert to array
+      setMovies(data.recommendations);
+
+      setLoading(false);
+
+    } catch (error) {
+      console.log("AI Movie Error:", error);
+      setLoading(false);
+    }
+  }
+
+  // -----------------------------
+  // BACK BUTTON
+  // -----------------------------
 
   const handleBackToGenres = () => {
     navigate("/genres");
   };
 
-  /* -----------------------------
-        FILTER LOGIC
-  ----------------------------- */
+  // -----------------------------
+  // LOADING UI
+  // -----------------------------
 
-  useEffect(() => {
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
+        <h2 className="text-xl">Loading AI Movie Recommendations...</h2>
+      </div>
+    );
+  }
 
-    let result = [...moviesData];
-
-    // FILTER BY LANGUAGE
-    if (userPreferences.selectedLanguages?.length > 0) {
-      result = result.filter((movie) => {
-        if (!movie.language) return true;
-
-        return userPreferences.selectedLanguages.some(
-          (lang) =>
-            movie.language.toLowerCase().includes(lang.toLowerCase()) ||
-            lang.toLowerCase().includes(movie.language.toLowerCase())
-        );
-      });
-    }
-
-    // MOOD → CATEGORY MAP
-    const moodToCategory = {
-
-      "Need Motivation": [
-        "Dream Chasers",
-        "Never Give Up",
-        "Rise to the Top",
-        "Self Growth",
-        "Student & Career Struggles",
-        "Comeback Stories"
-      ],
-
-      "Feeling Low": [
-        "Comfort Watch",
-        "Healing Stories",
-        "Light Hearted",
-        "Hope & Positivity"
-      ],
-
-      "Want Focus": [
-        "Mindset & Discipline",
-        "Deep Work",
-        "Biopics",
-        "Documentary"
-      ],
-
-      "Want Peace": [
-        "Feel Good",
-        "Slow Life",
-        "Nature & Travel",
-        "Spiritual"
-      ],
-
-      "Just for Fun": [
-        "Comedy",
-        "Light Entertainment",
-        "Feel Good Fun",
-        "Family Friendly"
-      ]
-    };
-
-    // APPLY MOOD FILTER
-    if (activeMood) {
-
-      const recommended =
-        moodToCategory[activeMood] || [];
-
-      if (recommended.length > 0) {
-        result = result.filter((movie) =>
-          recommended.includes(movie.category)
-        );
-      }
-    }
-
-    setFilteredMovies(result);
-
-  }, [activeMood, userPreferences.selectedLanguages]);
-
-  /* -----------------------------
-        UI
-  ----------------------------- */
+  // -----------------------------
+  // UI
+  // -----------------------------
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
@@ -131,11 +106,11 @@ const MoviesPage = () => {
       <div className="p-6 border-b border-gray-700">
 
         <h1 className="text-2xl md:text-3xl font-bold">
-          Movie Recommendations
+          AI Movie Recommendations
         </h1>
 
         <p className="text-white/60 mt-2">
-          Based on your preferences • {filteredMovies.length} movies found
+          Based on your mood & language • {movies.length} results
         </p>
 
       </div>
@@ -143,7 +118,7 @@ const MoviesPage = () => {
       {/* GRID */}
       <div className="flex flex lg:flex-row p-6 gap-6">
         <div className="flex-1">
-          <MoviesGrid movies={filteredMovies} />
+          <MoviesGrid movies={movies} />
         </div>
       </div>
 

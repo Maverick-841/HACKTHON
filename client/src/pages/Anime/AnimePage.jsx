@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import AnimeGrid from "./AnimeGrid";
 import { useShopContext } from "../../context/shopcontext";
-import { animeData } from "./AnimeData";
 
 const AnimePage = () => {
 
@@ -11,21 +10,18 @@ const AnimePage = () => {
   const { userPreferences } = useShopContext();
 
   /* -----------------------------------
-      LOAD SAVED DATA FROM STORAGE
+      LOAD SAVED MOOD
   ----------------------------------- */
-
-  const [selectedCategories, setSelectedCategories] = useState(() => {
-    return JSON.parse(localStorage.getItem("animeCategories")) || [];
-  });
-
-  const [filteredAnime, setFilteredAnime] = useState([]);
 
   const activeMood =
     userPreferences.selectedMood ||
     localStorage.getItem("selectedMood");
 
+  const [animes, setAnimes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   /* -----------------------------------
-      SAVE MOOD TO STORAGE
+      SAVE MOOD
   ----------------------------------- */
 
   useEffect(() => {
@@ -38,29 +34,6 @@ const AnimePage = () => {
   }, [userPreferences.selectedMood]);
 
   /* -----------------------------------
-      SAVE CATEGORIES TO STORAGE
-  ----------------------------------- */
-
-  useEffect(() => {
-    localStorage.setItem(
-      "animeCategories",
-      JSON.stringify(selectedCategories)
-    );
-  }, [selectedCategories]);
-
-  /* -----------------------------------
-      HANDLE CATEGORY CLICK
-  ----------------------------------- */
-
-  const handleFilterChange = (category) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
-  };
-
-  /* -----------------------------------
       BACK BUTTON
   ----------------------------------- */
 
@@ -69,80 +42,49 @@ const AnimePage = () => {
   };
 
   /* -----------------------------------
-      FILTER LOGIC
+      FETCH AI ANIME
   ----------------------------------- */
 
   useEffect(() => {
+    fetchAIAnime();
+  }, []);
 
-    let result = [...animeData];
-
-    const moodToCategory = {
-
-      "Need Motivation": [
-        "Action",
-        "Adventure",
-        "Sports",
-        "Biography",
-        "Inspirational",
-        "Success"
-      ],
-
-      "Feeling Low": [
-        "Romance",
-        "Comedy",
-        "Drama",
-        "Slice of Life"
-      ],
-
-      "Want Focus": [
-        "Psychological",
-        "Thriller",
-        "Mystery",
-        "Study",
-        "Productivity"
-      ],
-
-      "Want Peace": [
-        "Slice of Life",
-        "Romance",
-        "Feel Good",
-        "Spiritual",
-        "Nature"
-      ],
-
-      "Just for Fun": [
-        "Comedy",
-        "Parody",
-        "Adventure",
-        "Fantasy"
-      ]
-    };
-
-    /* 👉 FILTER BY CATEGORY */
-
-    if (selectedCategories.length > 0) {
-      result = result.filter((anime) =>
-        selectedCategories.includes(anime.category)
+  async function fetchAIAnime() {
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/mood/recommend",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mood: activeMood,
+            languages: userPreferences.selectedLanguages,
+            category: "Anime"
+          })
+        }
       );
+
+      const data = await res.json();
+      setAnimes(data.recommendations);
+      setLoading(false);
+
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
     }
+  }
 
-    /* 👉 FILTER BY MOOD (only when no category selected) */
+  /* -----------------------------------
+      LOADING UI
+  ----------------------------------- */
 
-    if (activeMood && selectedCategories.length === 0) {
-
-      const recommendedCategories =
-        moodToCategory[activeMood] || [];
-
-      if (recommendedCategories.length > 0) {
-        result = result.filter((anime) =>
-          recommendedCategories.includes(anime.category)
-        );
-      }
-    }
-
-    setFilteredAnime(result);
-
-  }, [selectedCategories, activeMood]);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Loading AI Anime Recommendations...
+      </div>
+    );
+  }
 
   /* -----------------------------------
       UI
@@ -152,9 +94,7 @@ const AnimePage = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
 
       {/* HEADER */}
-      <div className="p-6 border-b border-gray-700 flex items-center gap-4">
-
-        
+      <div className="p-6 border-b border-gray-700 flex justify-between items-center">
 
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">
@@ -162,15 +102,22 @@ const AnimePage = () => {
           </h1>
 
           <p className="text-white/60 mt-1">
-            Based on your preferences • {filteredAnime.length} anime found
+            Based on your preferences • {animes.length} anime found
           </p>
         </div>
+
+        <button
+          onClick={handleBackToGenres}
+          className="px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10"
+        >
+          ← Back
+        </button>
 
       </div>
 
       {/* GRID */}
       <div className="p-6">
-        <AnimeGrid animes={filteredAnime} />
+        <AnimeGrid animes={animes} />
       </div>
 
       {/* MOBILE TAGS */}
@@ -184,12 +131,12 @@ const AnimePage = () => {
             </span>
           )}
 
-          {selectedCategories.map((cat, index) => (
+          {userPreferences.selectedLanguages?.map((lang, index) => (
             <span
               key={index}
-              className="px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400 text-sm"
+              className="px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400 text-sm"
             >
-              {cat}
+              {lang}
             </span>
           ))}
 

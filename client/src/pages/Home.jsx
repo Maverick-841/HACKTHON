@@ -129,11 +129,7 @@ export default function Home() {
     const { token } = useContext(ShopContext);
 
     const handleStartJourney = () => {
-        if (!token) {
-            navigate('/login');
-        } else {
             navigate('/Mode');
-        }
     };
 
     return (

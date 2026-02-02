@@ -34,13 +34,14 @@ export default function Genres() {
     // Handle content type selection
     function handleSelect(contentType) {
         setSelectedContentType(contentType);
-        updatePreferences({ selectedContentType: contentType });
+
     }
 
     // Handle next button click
     function handleNext() {
         if (!selectedContentType) return;
 
+        updatePreferences({ selectedContentType});
         // Navigate to the corresponding page based on selection
         switch (selectedContentType.toLowerCase()) {
             case "movies":

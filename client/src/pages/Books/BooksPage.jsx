@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import BooksGrid from "./BooksGrid";
 import { useShopContext } from "../../context/shopcontext";
-import { bookData } from "./BookData";
 
 const BooksPage = () => {
 
@@ -11,18 +10,15 @@ const BooksPage = () => {
   const { userPreferences } = useShopContext();
 
   /* -----------------------------------
-      LOAD SAVED DATA
+      LOAD SAVED MOOD
   ----------------------------------- */
-
-  const [selectedCategories, setSelectedCategories] = useState(() => {
-    return JSON.parse(localStorage.getItem("bookCategories")) || [];
-  });
-
-  const [filteredBooks, setFilteredBooks] = useState([]);
 
   const activeMood =
     userPreferences.selectedMood ||
     localStorage.getItem("selectedMood");
+
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   /* -----------------------------------
       SAVE MOOD
@@ -38,17 +34,6 @@ const BooksPage = () => {
   }, [userPreferences.selectedMood]);
 
   /* -----------------------------------
-      SAVE CATEGORIES
-  ----------------------------------- */
-
-  useEffect(() => {
-    localStorage.setItem(
-      "bookCategories",
-      JSON.stringify(selectedCategories)
-    );
-  }, [selectedCategories]);
-
-  /* -----------------------------------
       BACK BUTTON
   ----------------------------------- */
 
@@ -57,51 +42,49 @@ const BooksPage = () => {
   };
 
   /* -----------------------------------
-      FILTER LOGIC
+      FETCH AI BOOKS
   ----------------------------------- */
 
   useEffect(() => {
+    fetchAIBooks();
+  }, []);
 
-    let result = [...bookData];
-
-    // FILTER BY CATEGORY
-    if (selectedCategories.length > 0) {
-      result = result.filter((book) =>
-        selectedCategories.includes(book.category)
+  async function fetchAIBooks() {
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/mood/recommend",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mood: activeMood,
+            languages: userPreferences.selectedLanguages,
+            category: "Books"
+          })
+        }
       );
+
+      const data = await res.json();
+      setBooks(data.recommendations);
+      setLoading(false);
+
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
     }
+  }
 
-    // MOOD TO CATEGORY MAP
-    const moodToCategory = {
+  /* -----------------------------------
+      LOADING UI
+  ----------------------------------- */
 
-      "Just for Fun": ["Fiction", "Comedy", "Mystery"],
-
-      "Need Motivation": ["Self-Help", "Biography", "Inspirational"],
-
-      "Feeling Low": ["Fiction", "Romance", "Poetry"],
-
-      "Want Focus": ["Non-Fiction", "Educational", "Science"],
-
-      "Want Peace": ["Spirituality", "Meditation", "Nature"]
-
-    };
-
-    // FILTER BY MOOD ONLY IF NO CATEGORY SELECTED
-    if (activeMood && selectedCategories.length === 0) {
-
-      const recommended =
-        moodToCategory[activeMood] || [];
-
-      if (recommended.length > 0) {
-        result = result.filter((book) =>
-          recommended.includes(book.category)
-        );
-      }
-    }
-
-    setFilteredBooks(result);
-
-  }, [selectedCategories, activeMood]);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Loading AI Book Recommendations...
+      </div>
+    );
+  }
 
   /* -----------------------------------
       UI
@@ -111,8 +94,7 @@ const BooksPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
 
       {/* HEADER */}
-      <div className="p-6 border-b border-gray-700 flex items-center gap-4">
-
+      <div className="p-6 border-b border-gray-700 flex justify-between items-center">
 
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">
@@ -120,15 +102,22 @@ const BooksPage = () => {
           </h1>
 
           <p className="text-white/60 mt-1">
-            Based on your preferences • {filteredBooks.length} books found
+            Based on your preferences • {books.length} books found
           </p>
         </div>
+
+        <button
+          onClick={handleBackToGenres}
+          className="px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10"
+        >
+          ← Back
+        </button>
 
       </div>
 
       {/* GRID */}
       <div className="p-6">
-        <BooksGrid books={filteredBooks} />
+        <BooksGrid books={books} />
       </div>
 
       {/* MOBILE TAGS */}
@@ -142,12 +131,12 @@ const BooksPage = () => {
             </span>
           )}
 
-          {selectedCategories.map((cat, index) => (
+          {userPreferences.selectedLanguages?.map((lang, index) => (
             <span
               key={index}
-              className="px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400 text-sm"
+              className="px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400 text-sm"
             >
-              {cat}
+              {lang}
             </span>
           ))}
 

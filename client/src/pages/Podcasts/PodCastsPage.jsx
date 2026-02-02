@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import PodcastsGrid from "./PodcastsGrid";
-import { podcastsData } from "./PodCastsData";
 import { useShopContext } from "../../context/shopcontext";
 
 const PodCastsPage = () => {
@@ -18,7 +17,8 @@ const PodCastsPage = () => {
     userPreferences.selectedMood ||
     localStorage.getItem("selectedMood");
 
-  const [filteredPodcasts, setFilteredPodcasts] = useState([]);
+  const [podcasts, setPodcasts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   /* -----------------------------
         SAVE MOOD
@@ -42,51 +42,49 @@ const PodCastsPage = () => {
   };
 
   /* -----------------------------
-        FILTER LOGIC
+        FETCH AI PODCASTS
   ----------------------------- */
 
   useEffect(() => {
+    fetchAIPodcasts();
+  }, []);
 
-    let result = [...podcastsData];
+  async function fetchAIPodcasts() {
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/mood/recommend",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mood: activeMood,
+            languages: userPreferences.selectedLanguages,
+            category: "Podcasts"
+          })
+        }
+      );
 
-    // FILTER BY LANGUAGE
-    if (userPreferences.selectedLanguages?.length > 0) {
-      result = result.filter((podcast) => {
-        if (!podcast.language) return true;
+      const data = await res.json();
+      setPodcasts(data.recommendations);
+      setLoading(false);
 
-        return userPreferences.selectedLanguages.some(
-          (lang) =>
-            podcast.language.toLowerCase().includes(lang.toLowerCase()) ||
-            lang.toLowerCase().includes(podcast.language.toLowerCase())
-        );
-      });
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
     }
+  }
 
-    // MOOD → CATEGORY MAP
-    const moodToCategory = {
-      "Need Motivation": ["Business", "Self-Help", "Entrepreneurship"],
-      "Feeling Low": ["Comedy", "Storytelling", "Entertainment"],
-      "Want Focus": ["Educational", "Technology", "Science"],
-      "Want Peace": ["Meditation", "Spirituality", "Wellness"],
-      "Just for Fun": ["Comedy", "Entertainment", "Pop Culture"]
-    };
+  /* -----------------------------
+        LOADING UI
+  ----------------------------- */
 
-    // APPLY MOOD FILTER
-    if (activeMood) {
-
-      const recommended =
-        moodToCategory[activeMood] || [];
-
-      if (recommended.length > 0) {
-        result = result.filter((p) =>
-          recommended.includes(p.category)
-        );
-      }
-    }
-
-    setFilteredPodcasts(result);
-
-  }, [activeMood, userPreferences.selectedLanguages]);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Loading AI Podcast Recommendations...
+      </div>
+    );
+  }
 
   /* -----------------------------
         UI
@@ -96,22 +94,31 @@ const PodCastsPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
 
       {/* HEADER */}
-      <div className="p-6 border-b border-gray-700">
+      <div className="p-6 border-b border-gray-700 flex justify-between items-center">
 
-        <h1 className="text-2xl md:text-3xl font-bold">
-          Podcast Recommendations
-        </h1>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold">
+            Podcast Recommendations
+          </h1>
 
-        <p className="text-white/60 mt-2">
-          Based on your preferences • {filteredPodcasts.length} podcasts found
-        </p>
+          <p className="text-white/60 mt-2">
+            Based on your preferences • {podcasts.length} podcasts found
+          </p>
+        </div>
+
+        <button
+          onClick={handleBackToGenres}
+          className="px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10"
+        >
+          ← Back
+        </button>
 
       </div>
 
       {/* GRID */}
       <div className="flex flex-col lg:flex-row p-6 gap-6">
         <div className="flex-1">
-          <PodcastsGrid podcasts={filteredPodcasts} />
+          <PodcastsGrid podcasts={podcasts} />
         </div>
       </div>
 

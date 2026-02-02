@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import WebseriesGrid from "./WebseriesGrid";
-import { webSeriesData } from "./WebseriesData";
 import { useShopContext } from "../../context/shopcontext";
 
 const WebseriesPage = () => {
@@ -18,7 +17,8 @@ const WebseriesPage = () => {
         userPreferences.selectedMood ||
         localStorage.getItem("selectedMood");
 
-    const [filteredSeries, setFilteredSeries] = useState([]);
+    const [series, setSeries] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     /* -----------------------------
           SAVE MOOD
@@ -42,51 +42,49 @@ const WebseriesPage = () => {
     };
 
     /* -----------------------------
-          FILTER LOGIC
+          FETCH AI WEBSERIES
     ----------------------------- */
 
     useEffect(() => {
+        fetchAIWebseries();
+    }, []);
 
-        let result = [...webSeriesData];
+    async function fetchAIWebseries() {
+        try {
+            const res = await fetch(
+                "http://localhost:5000/api/mood/recommend",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        mood: activeMood,
+                        languages: userPreferences.selectedLanguages,
+                        category: "Web Series"
+                    })
+                }
+            );
 
-        // FILTER BY LANGUAGE
-        if (userPreferences.selectedLanguages?.length > 0) {
-            result = result.filter((series) => {
-                if (!series.language) return true;
+            const data = await res.json();
+            setSeries(data.recommendations);
+            setLoading(false);
 
-                return userPreferences.selectedLanguages.some(
-                    (lang) =>
-                        series.language.toLowerCase().includes(lang.toLowerCase()) ||
-                        lang.toLowerCase().includes(series.language.toLowerCase())
-                );
-            });
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
         }
+    }
 
-        // MOOD → CATEGORY MAP
-        const moodToCategory = {
-            "Need Motivation": ["Action", "Thriller", "Crime"],
-            "Feeling Low": ["Comedy", "Romance", "Drama"],
-            "Want Focus": ["Thriller", "Mystery", "Sci-Fi"],
-            "Want Peace": ["Drama", "Romance", "Comedy"],
-            "Just for Fun": ["Comedy", "Action", "Adventure"]
-        };
+    /* -----------------------------
+          LOADING UI
+    ----------------------------- */
 
-        // APPLY MOOD FILTER
-        if (activeMood) {
-
-            const recommended =
-                moodToCategory[activeMood] || [];
-
-            if (recommended.length > 0) {
-                result = result.filter((s) =>
-                    recommended.includes(s.category)
-                );
-            }
-        }
-
-        setFilteredSeries(result);
-
-    }, [activeMood, userPreferences.selectedLanguages]);
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-white">
+                Loading AI Web Series Recommendations...
+            </div>
+        );
+    }
 
     /* -----------------------------
           UI
@@ -96,22 +94,31 @@ const WebseriesPage = () => {
         <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
 
             {/* HEADER */}
-            <div className="p-6 border-b border-gray-700">
+            <div className="p-6 border-b border-gray-700 flex justify-between items-center">
 
-                <h1 className="text-2xl md:text-3xl font-bold">
-                    Web Series Recommendations
-                </h1>
+                <div>
+                    <h1 className="text-2xl md:text-3xl font-bold">
+                        Web Series Recommendations
+                    </h1>
 
-                <p className="text-white/60 mt-2">
-                    Based on your preferences • {filteredSeries.length} series found
-                </p>
+                    <p className="text-white/60 mt-2">
+                        Based on your preferences • {series.length} series found
+                    </p>
+                </div>
+
+                <button
+                    onClick={handleBackToGenres}
+                    className="px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10"
+                >
+                    ← Back
+                </button>
 
             </div>
 
             {/* GRID */}
             <div className="flex lg:flex-row p-6 gap-6">
                 <div className="flex-1">
-                    <WebseriesGrid series={filteredSeries} />
+                    <WebseriesGrid series={series} />
                 </div>
             </div>
 

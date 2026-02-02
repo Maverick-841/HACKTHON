@@ -28,8 +28,6 @@ export default function Language() {
 
         setSelectedItems(newSelection);
 
-        // ✅ OPTIONAL: Save to context immediately
-        updatePreferences({ selectedLanguages: newSelection });
     }
 
     // ✅ MODIFIED THIS FUNCTION

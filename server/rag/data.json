@@ -1,0 +1,21 @@
+[
+  {
+    "title": "Interstellar",
+    "category": "Movies",
+    "language": "English",
+    "mood": "Want Focus",
+    "description": "Space exploration and time travel sci-fi movie"
+  },
+  {
+    "title": "3 Idiots",
+    "category": "Movies",
+    "language": "Hindi",
+    "mood": "Just for Fun",             
+    "description": "College life, friendship, and motivation"
+  },
+  {                         
+    "title": "Atomic Habits",
+    "category": "Books",
+    "language": "English",
+    "mood": "Need Motivation",                
+    "descr

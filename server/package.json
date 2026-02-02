@@ -9,12 +9,17 @@
   },
   "keywords": [],
   "author": "",
+  "type": "module",
   "license": "ISC",
   "dependencies": {
+    "@langchain/community": "^1.1.10",
+    "@langchain/core": "^1.1.18",
+    "@langchain/ollama": "^1.2.2",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
+    "chromadb": "^3.2.2",
     "cors": "^2.8.6",
-    "dotenv": "^17.2.3",
+    "dotenv": "^16.4.5",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.3"

@@ -43,7 +43,6 @@ export default function Mode() {
 
   function handleMoodSelect(moodLabel) {
     setSelectedMood(moodLabel);
-    updatePreferences({ selectedMood: moodLabel });
   }
 
   function handleBack() {
