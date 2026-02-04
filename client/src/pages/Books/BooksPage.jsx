@@ -46,8 +46,11 @@ const BooksPage = () => {
   ----------------------------------- */
 
   useEffect(() => {
-    fetchAIBooks();
-  }, []);
+    if (activeMood) {
+      setLoading(true);
+      fetchAIBooks();
+    }
+  }, [activeMood, userPreferences.selectedLanguages]);
 
   async function fetchAIBooks() {
     try {
@@ -58,16 +61,22 @@ const BooksPage = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             mood: activeMood,
-            languages: userPreferences.selectedLanguages,
-            category: userPreferences.selectedContentType
-
-
+            language: userPreferences.selectedLanguages?.[0] || "English",
+            category: "Books"
           })
         }
       );
 
       const data = await res.json();
-      setBooks(data.recommendations);
+
+      if (!res.ok) {
+        console.error(data);
+        setBooks([]);
+        setLoading(false);
+        return;
+      }
+
+      setBooks(data.recommendations || []);
       setLoading(false);
 
     } catch (error) {

@@ -9,9 +9,9 @@ const WebseriesPage = () => {
     const navigate = useNavigate();
     const { userPreferences } = useShopContext();
 
-    /* -----------------------------
-          LOAD SAVED MOOD
-    ----------------------------- */
+    /* -----------------------------------
+        LOAD SAVED MOOD
+    ----------------------------------- */
 
     const activeMood =
         userPreferences.selectedMood ||
@@ -20,9 +20,9 @@ const WebseriesPage = () => {
     const [series, setSeries] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    /* -----------------------------
-          SAVE MOOD
-    ----------------------------- */
+    /* -----------------------------------
+        SAVE MOOD
+    ----------------------------------- */
 
     useEffect(() => {
         if (userPreferences.selectedMood) {
@@ -33,21 +33,24 @@ const WebseriesPage = () => {
         }
     }, [userPreferences.selectedMood]);
 
-    /* -----------------------------
-          BACK BUTTON
-    ----------------------------- */
+    /* -----------------------------------
+        BACK BUTTON
+    ----------------------------------- */
 
     const handleBackToGenres = () => {
         navigate("/genres");
     };
 
-    /* -----------------------------
-          FETCH AI WEBSERIES
-    ----------------------------- */
+    /* -----------------------------------
+        FETCH AI WEB SERIES
+    ----------------------------------- */
 
     useEffect(() => {
-        fetchAIWebseries();
-    }, []);
+        if (activeMood) {
+            setLoading(true);
+            fetchAIWebseries();
+        }
+    }, [activeMood, userPreferences.selectedLanguages]);
 
     async function fetchAIWebseries() {
         try {
@@ -58,27 +61,33 @@ const WebseriesPage = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         mood: activeMood,
-                        languages: userPreferences.selectedLanguages,
-                category: userPreferences.selectedContentType
-
-
+                        language: userPreferences.selectedLanguages?.[0] || "English",
+                        category: "Web Series"
                     })
                 }
             );
 
             const data = await res.json();
-            setSeries(data.recommendations);
+
+            if (!res.ok) {
+                console.error(data);
+                setSeries([]);
+                setLoading(false);
+                return;
+            }
+
+            setSeries(data.recommendations || []);
             setLoading(false);
 
         } catch (error) {
-            console.log(error);
+            console.log("AI Webseries Error:", error);
             setLoading(false);
         }
     }
 
-    /* -----------------------------
-          LOADING UI
-    ----------------------------- */
+    /* -----------------------------------
+        LOADING UI
+    ----------------------------------- */
 
     if (loading) {
         return (
@@ -88,9 +97,9 @@ const WebseriesPage = () => {
         );
     }
 
-    /* -----------------------------
-          UI
-    ----------------------------- */
+    /* -----------------------------------
+        UI
+    ----------------------------------- */
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
@@ -103,7 +112,7 @@ const WebseriesPage = () => {
                         Web Series Recommendations
                     </h1>
 
-                    <p className="text-white/60 mt-2">
+                    <p className="text-white/60 mt-1">
                         Based on your preferences • {series.length} series found
                     </p>
                 </div>
@@ -118,10 +127,8 @@ const WebseriesPage = () => {
             </div>
 
             {/* GRID */}
-            <div className="flex lg:flex-row p-6 gap-6">
-                <div className="flex-1">
-                    <WebseriesGrid series={series} />
-                </div>
+            <div className="p-6">
+                <WebseriesGrid series={series} />
             </div>
 
             {/* MOBILE TAGS */}

@@ -5,7 +5,7 @@ import fs from "fs";
 console.log("🚀 Ingest started...");
 
 const data = JSON.parse(
-  fs.readFileSync("./rag/data.json", "utf8")
+  fs.readFileSync(new URL("./data.json", import.meta.url), "utf8")
 );
 
 const embeddings = new OllamaEmbeddings({
@@ -26,9 +26,12 @@ console.log("📦 Creating collection with first batch...");
 const vectorStore = await Chroma.fromDocuments(
   firstBatch,
   embeddings,
-  { collectionName: "content-db-v2" }
-              
+  {
+    collectionName: "content-db-v2",
+    persistDirectory: "./chroma"
+  }
 );
+
 
 // ---- REMAINING BATCHES ----
 for (let i = BATCH_SIZE; i < data.length; i += BATCH_SIZE) {

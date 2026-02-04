@@ -9,9 +9,9 @@ const PodCastsPage = () => {
   const navigate = useNavigate();
   const { userPreferences } = useShopContext();
 
-  /* -----------------------------
-        LOAD SAVED MOOD
-  ----------------------------- */
+  /* -----------------------------------
+      LOAD SAVED MOOD
+  ----------------------------------- */
 
   const activeMood =
     userPreferences.selectedMood ||
@@ -20,9 +20,9 @@ const PodCastsPage = () => {
   const [podcasts, setPodcasts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  /* -----------------------------
-        SAVE MOOD
-  ----------------------------- */
+  /* -----------------------------------
+      SAVE MOOD
+  ----------------------------------- */
 
   useEffect(() => {
     if (userPreferences.selectedMood) {
@@ -33,21 +33,24 @@ const PodCastsPage = () => {
     }
   }, [userPreferences.selectedMood]);
 
-  /* -----------------------------
-        BACK BUTTON
-  ----------------------------- */
+  /* -----------------------------------
+      BACK BUTTON
+  ----------------------------------- */
 
   const handleBackToGenres = () => {
     navigate("/genres");
   };
 
-  /* -----------------------------
-        FETCH AI PODCASTS
-  ----------------------------- */
+  /* -----------------------------------
+      FETCH AI PODCASTS
+  ----------------------------------- */
 
   useEffect(() => {
-    fetchAIPodcasts();
-  }, []);
+    if (activeMood) {
+      setLoading(true);
+      fetchAIPodcasts();
+    }
+  }, [activeMood, userPreferences.selectedLanguages]);
 
   async function fetchAIPodcasts() {
     try {
@@ -58,27 +61,33 @@ const PodCastsPage = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             mood: activeMood,
-            languages: userPreferences.selectedLanguages,
-            category: userPreferences.selectedContentType
-
-
+            language: userPreferences.selectedLanguages?.[0] || "English",
+            category: "Podcasts"
           })
         }
       );
 
       const data = await res.json();
-      setPodcasts(data.recommendations);
+
+      if (!res.ok) {
+        console.error(data);
+        setPodcasts([]);
+        setLoading(false);
+        return;
+      }
+
+      setPodcasts(data.recommendations || []);
       setLoading(false);
 
     } catch (error) {
-      console.log(error);
+      console.log("AI Podcast Error:", error);
       setLoading(false);
     }
   }
 
-  /* -----------------------------
-        LOADING UI
-  ----------------------------- */
+  /* -----------------------------------
+      LOADING UI
+  ----------------------------------- */
 
   if (loading) {
     return (
@@ -88,9 +97,9 @@ const PodCastsPage = () => {
     );
   }
 
-  /* -----------------------------
-        UI
-  ----------------------------- */
+  /* -----------------------------------
+      UI
+  ----------------------------------- */
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
@@ -103,7 +112,7 @@ const PodCastsPage = () => {
             Podcast Recommendations
           </h1>
 
-          <p className="text-white/60 mt-2">
+          <p className="text-white/60 mt-1">
             Based on your preferences • {podcasts.length} podcasts found
           </p>
         </div>
@@ -118,10 +127,8 @@ const PodCastsPage = () => {
       </div>
 
       {/* GRID */}
-      <div className="flex flex-col lg:flex-row p-6 gap-6">
-        <div className="flex-1">
-          <PodcastsGrid podcasts={podcasts} />
-        </div>
+      <div className="p-6">
+        <PodcastsGrid podcasts={podcasts} />
       </div>
 
       {/* MOBILE TAGS */}

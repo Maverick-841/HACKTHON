@@ -240,14 +240,6 @@
     "description": "Romantic fun drama"
   },
   {
-    "id": 31,
-    "title": "Sairat",
-    "category": "Movies",
-    "language": "Marathi",
-    "mood": "Just for Fun",
-    "description": "Love story"
-  },
-  {
     "id": 32,
     "title": "Bojhena Shey Bojhena",
     "category": "Movies",
@@ -504,14 +496,6 @@
     "description": "Romantic calm song"
   },
   {
-    "id": 64,
-    "title": "Bojhena Se Bojhena",
-    "category": "Music",
-    "language": "Bengali",
-    "mood": "Want Focus",
-    "description": "Soft love song"
-  },
-  {
     "id": 65,
     "title": "River",
     "category": "Music",
@@ -758,14 +742,6 @@
     "language": "Marathi",
     "mood": "Need Motivation",
     "description": "Story of strength"
-  },
-  {
-    "id": 96,
-    "title": "Ekla Cholo Re",
-    "category": "Books",
-    "language": "Bengali",
-    "mood": "Need Motivation",
-    "description": "Inspirational classic"
   },
   {
     "id": 97,
@@ -1072,14 +1048,6 @@
     "description": "Scientists success story"
   },
   {
-    "id": 135,
-    "title": "Samantar",
-    "category": "Web Series",
-    "language": "Marathi",
-    "mood": "Need Motivation",
-    "description": "Parallel life journey"
-  },
-  {
     "id": 136,
     "title": "Byomkesh",
     "category": "Web Series",
@@ -1168,7 +1136,7 @@
     "description": "Warm family drama"
   },
   {
-    "id": 147,                      
+    "id": 147,
     "title": "Meet Cute",
     "category": "Web Series",
     "language": "Telugu",
@@ -1182,14 +1150,6 @@
     "language": "Tamil",
     "mood": "Want Peace",
     "description": "Love and relationships"
-  },
-  {
-    "id": 149,
-    "title": "Hondisi Bareyiri",
-    "category": "Web Series",
-    "language": "Kannada",
-    "mood": "Want Peace",
-    "description": "Life reflections"
   },
   {
     "id": 150,
@@ -1248,14 +1208,6 @@
     "description": "Office comedy"
   },
   {
-    "id": 157,
-    "title": "Humble Politician Nograj",
-    "category": "Web Series",
-    "language": "Kannada",
-    "mood": "Just for Fun",
-    "description": "Political comedy"
-  },
-  {
     "id": 158,
     "title": "Karikku",
     "category": "Web Series",
@@ -1283,7 +1235,7 @@
     "id": 161,
     "title": "Your Lie in April",
     "category": "Anime",
-    "language": "Japanese",
+    "language": "English",
     "mood": "Feeling Low",
     "description": "Emotional story about music and loss"
   },
@@ -1416,14 +1368,6 @@
     "description": "Mind games and strategy"
   },
   {
-    "id": 178,
-    "title": "Attack on Titan",
-    "category": "Anime",
-    "language": "Hindi",
-    "mood": "Want Focus",
-    "description": "Humanity vs titans"
-  },
-  {
     "id": 179,
     "title": "Tokyo Ghoul",
     "category": "Anime",
@@ -1528,14 +1472,6 @@
     "description": "Spirits and friendship"
   },
   {
-    "id": 192,
-    "title": "Violet Evergarden",
-    "category": "Anime",
-    "language": "Bengali",
-    "mood": "Want Peace",
-    "description": "Healing emotional journey"
-  },
-  {
     "id": 193,
     "title": "Pokemon",
     "category": "Anime",
@@ -1558,14 +1494,6 @@
     "language": "Telugu",
     "mood": "Just for Fun",
     "description": "Funny kid antics"
-  },
-  {
-    "id": 196,
-    "title": "One Piece",
-    "category": "Anime",
-    "language": "Tamil",
-    "mood": "Just for Fun",
-    "description": "Pirate adventure"
   },
   {
     "id": 197,
@@ -1931,6 +1859,7 @@
     "id": 242,
     "title": "MS Dhoni: Untold Story",
     "category": "Documentaries",
+
     "language": "Hindi",
     "mood": "Need Motivation",
     "description": "Journey of a champion"
@@ -2208,22 +2137,6 @@
     "description": "Tradition, power and self discovery"
   },
   {
-    "id": 277,
-    "title": "Believer",
-    "category": "Music",
-    "language": "English",
-    "mood": "Need Motivation",
-    "description": "Energetic song about inner strength and resilience"
-  },
-  {
-    "id": 278,
-    "title": "Zinda",
-    "category": "Music",
-    "language": "Hindi",
-    "mood": "Need Motivation",
-    "description": "Never give up motivational song"
-  },
-  {
     "id": 279,
     "title": "Why This Kolaveri Di",
     "category": "Music",
@@ -2254,14 +2167,6 @@
     "language": "Bengali",
     "mood": "Want Peace",
     "description": "Calm and soulful romantic song"
-  },
-  {
-    "id": 283,
-    "title": "Atomic Habits",
-    "category": "Books",
-    "language": "English",
-    "mood": "Need Motivation",
-    "description": "Book about building good habits and breaking bad ones"
   },
   {
     "id": 284,
@@ -2352,14 +2257,6 @@
     "description": "Crime drama series"
   },
   {
-    "id": 295,
-    "title": "One Piece",
-    "category": "Anime",
-    "language": "Japanese",
-    "mood": "Just for Fun",
-    "description": "Pirate adventure anime"
-  },
-  {
     "id": 296,
     "title": "Attack on Titan",
     "category": "Anime",
@@ -2375,14 +2272,7 @@
     "mood": "Just for Fun",
     "description": "Cursed spirit battles"
   },
-  {
-    "id": 298,
-    "title": "Your Name",
-    "category": "Anime",
-    "language": "Japanese",
-    "mood": "Want Peace",
-    "description": "Romantic fantasy anime film"
-  },
+  
   {
     "id": 299,
     "title": "The Social Dilemma",

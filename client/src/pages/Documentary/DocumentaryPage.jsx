@@ -9,9 +9,9 @@ const DocumentaryPage = () => {
     const navigate = useNavigate();
     const { userPreferences } = useShopContext();
 
-    /* -----------------------------
-          LOAD SAVED MOOD
-    ----------------------------- */
+    /* -----------------------------------
+        LOAD SAVED MOOD
+    ----------------------------------- */
 
     const activeMood =
         userPreferences.selectedMood ||
@@ -20,9 +20,9 @@ const DocumentaryPage = () => {
     const [documentaries, setDocumentaries] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    /* -----------------------------
-          SAVE MOOD
-    ----------------------------- */
+    /* -----------------------------------
+        SAVE MOOD
+    ----------------------------------- */
 
     useEffect(() => {
         if (userPreferences.selectedMood) {
@@ -33,21 +33,24 @@ const DocumentaryPage = () => {
         }
     }, [userPreferences.selectedMood]);
 
-    /* -----------------------------
-          BACK BUTTON
-    ----------------------------- */
+    /* -----------------------------------
+        BACK BUTTON
+    ----------------------------------- */
 
     const handleBackToGenres = () => {
         navigate("/genres");
     };
 
-    /* -----------------------------
-          FETCH AI DOCUMENTARIES
-    ----------------------------- */
+    /* -----------------------------------
+        FETCH AI DOCUMENTARIES
+    ----------------------------------- */
 
     useEffect(() => {
-        fetchAIDocumentaries();
-    }, []);
+        if (activeMood) {
+            setLoading(true);
+            fetchAIDocumentaries();
+        }
+    }, [activeMood, userPreferences.selectedLanguages]);
 
     async function fetchAIDocumentaries() {
         try {
@@ -58,16 +61,22 @@ const DocumentaryPage = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         mood: activeMood,
-                        languages: userPreferences.selectedLanguages,
-                        category: userPreferences.selectedContentType
-
-
+                        language: userPreferences.selectedLanguages?.[0] || "English",
+                        category: "Documentaries"
                     })
                 }
             );
 
             const data = await res.json();
-            setDocumentaries(data.recommendations);
+
+            if (!res.ok) {
+                console.error(data);
+                setDocumentaries([]);
+                setLoading(false);
+                return;
+            }
+
+            setDocumentaries(data.recommendations || []);
             setLoading(false);
 
         } catch (error) {
@@ -76,9 +85,9 @@ const DocumentaryPage = () => {
         }
     }
 
-    /* -----------------------------
-          LOADING UI
-    ----------------------------- */
+    /* -----------------------------------
+        LOADING UI
+    ----------------------------------- */
 
     if (loading) {
         return (
@@ -88,9 +97,9 @@ const DocumentaryPage = () => {
         );
     }
 
-    /* -----------------------------
-          UI
-    ----------------------------- */
+    /* -----------------------------------
+        UI
+    ----------------------------------- */
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
@@ -103,7 +112,7 @@ const DocumentaryPage = () => {
                         Documentary Recommendations
                     </h1>
 
-                    <p className="text-white/60 mt-2">
+                    <p className="text-white/60 mt-1">
                         Based on your preferences • {documentaries.length} documentaries found
                     </p>
                 </div>

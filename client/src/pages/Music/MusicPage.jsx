@@ -9,9 +9,9 @@ const MusicPage = () => {
   const navigate = useNavigate();
   const { userPreferences } = useShopContext();
 
-  /* -----------------------------
-        LOAD SAVED MOOD
-  ----------------------------- */
+  /* -----------------------------------
+      LOAD SAVED MOOD
+  ----------------------------------- */
 
   const activeMood =
     userPreferences.selectedMood ||
@@ -20,9 +20,9 @@ const MusicPage = () => {
   const [musicList, setMusicList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  /* -----------------------------
-        SAVE MOOD
-  ----------------------------- */
+  /* -----------------------------------
+      SAVE MOOD
+  ----------------------------------- */
 
   useEffect(() => {
     if (userPreferences.selectedMood) {
@@ -33,21 +33,24 @@ const MusicPage = () => {
     }
   }, [userPreferences.selectedMood]);
 
-  /* -----------------------------
-        BACK BUTTON
-  ----------------------------- */
+  /* -----------------------------------
+      BACK BUTTON
+  ----------------------------------- */
 
   const handleBackToGenres = () => {
     navigate("/genres");
   };
 
-  /* -----------------------------
-        FETCH AI MUSIC
-  ----------------------------- */
+  /* -----------------------------------
+      FETCH AI MUSIC
+  ----------------------------------- */
 
   useEffect(() => {
-    fetchAIMusic();
-  }, []);
+    if (activeMood) {
+      setLoading(true);
+      fetchAIMusic();
+    }
+  }, [activeMood, userPreferences.selectedLanguages]);
 
   async function fetchAIMusic() {
     try {
@@ -58,27 +61,33 @@ const MusicPage = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             mood: activeMood,
-            languages: userPreferences.selectedLanguages,
-           category: userPreferences.selectedContentType
-
-
+            language: userPreferences.selectedLanguages?.[0] || "English",
+            category: "Music"
           })
         }
       );
 
       const data = await res.json();
-      setMusicList(data.recommendations);
+
+      if (!res.ok) {
+        console.error(data);
+        setMusicList([]);
+        setLoading(false);
+        return;
+      }
+
+      setMusicList(data.recommendations || []);
       setLoading(false);
 
     } catch (error) {
-      console.log(error);
+      console.log("AI Music Error:", error);
       setLoading(false);
     }
   }
 
-  /* -----------------------------
-        LOADING UI
-  ----------------------------- */
+  /* -----------------------------------
+      LOADING UI
+  ----------------------------------- */
 
   if (loading) {
     return (
@@ -88,9 +97,9 @@ const MusicPage = () => {
     );
   }
 
-  /* -----------------------------
-        UI
-  ----------------------------- */
+  /* -----------------------------------
+      UI
+  ----------------------------------- */
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
@@ -103,7 +112,7 @@ const MusicPage = () => {
             Music Recommendations
           </h1>
 
-          <p className="text-white/60 mt-2">
+          <p className="text-white/60 mt-1">
             Based on your preferences • {musicList.length} tracks found
           </p>
         </div>
@@ -118,10 +127,8 @@ const MusicPage = () => {
       </div>
 
       {/* GRID */}
-      <div className="flex flex lg:flex-row p-6 gap-6">
-        <div className="flex-1">
-          <MusicGrid musicList={musicList} />
-        </div>
+      <div className="p-6">
+        <MusicGrid musicList={musicList} />
       </div>
 
       {/* MOBILE TAGS */}

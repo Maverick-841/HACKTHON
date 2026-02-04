@@ -6,7 +6,7 @@ export const ShopContext = createContext();
 
 // 2️⃣ Create provider component                                   
 export const ShopProvider = ({ children }) => {
-
+            
   // 🔐 Auth token
   const [token, setToken] = useState(localStorage.getItem("token") || "");
 

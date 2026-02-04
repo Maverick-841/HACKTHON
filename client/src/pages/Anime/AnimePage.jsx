@@ -46,10 +46,10 @@ const AnimePage = () => {
   ----------------------------------- */
 
   useEffect(() => {
-  if (activeMood) {
-    fetchAIAnime();
-  }
-}, [activeMood, userPreferences.selectedLanguages]);
+    if (activeMood) {
+      fetchAIAnime();
+    }
+  }, [activeMood, userPreferences.selectedLanguages]);
 
 
   async function fetchAIAnime() {
@@ -61,17 +61,27 @@ const AnimePage = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             mood: activeMood,
-            languages: userPreferences.selectedLanguages,
-          category: "Anime"
+            language: userPreferences.selectedLanguages?.[0],
+            category: "Anime"
 
 
           })
         }
       );
-                
+
       const data = await res.json();
-      setAnimes(data.recommendations);
+
+      if (!res.ok) {
+        console.error(data);
+        setAnimes([]);
+        setLoading(false);
+        return;
+      }
+
+      setAnimes(data.recommendations || []);
       setLoading(false);
+
+
 
     } catch (error) {
       console.log(error);

@@ -9,24 +9,20 @@ const MoviesPage = () => {
   const navigate = useNavigate();
   const { userPreferences } = useShopContext();
 
-  // -----------------------------
-  // LOAD SAVED MOOD
-  // -----------------------------
-                     
+  /* -----------------------------------
+      LOAD SAVED MOOD
+  ----------------------------------- */
+
   const activeMood =
     userPreferences.selectedMood ||
     localStorage.getItem("selectedMood");
 
-  // -----------------------------
-  // STATES
-  // -----------------------------
-
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // -----------------------------
-  // SAVE MOOD
-  // -----------------------------
+  /* -----------------------------------
+      SAVE MOOD
+  ----------------------------------- */
 
   useEffect(() => {
     if (userPreferences.selectedMood) {
@@ -37,13 +33,24 @@ const MoviesPage = () => {
     }
   }, [userPreferences.selectedMood]);
 
-  // -----------------------------
-  // FETCH AI MOVIES
-  // -----------------------------
+  /* -----------------------------------
+      BACK BUTTON
+  ----------------------------------- */
+
+  const handleBackToGenres = () => {
+    navigate("/genres");
+  };
+
+  /* -----------------------------------
+      FETCH AI MOVIES
+  ----------------------------------- */
 
   useEffect(() => {
-    fetchAIMovies();
-  }, []);
+    if (activeMood) {
+      setLoading(true);
+      fetchAIMovies();
+    }
+  }, [activeMood, userPreferences.selectedLanguages]);
 
   async function fetchAIMovies() {
     try {
@@ -51,24 +58,25 @@ const MoviesPage = () => {
         "http://localhost:5000/api/mood/recommend",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             mood: activeMood,
-            languages: userPreferences.selectedLanguages,
-           category: userPreferences.selectedContentType
-
-
+            language: userPreferences.selectedLanguages?.[0] || "English",
+            category: "Movies"
           })
         }
       );
 
       const data = await res.json();
 
-      // Backend sends string JSON → convert to array
-      setMovies(data.recommendations);
+      if (!res.ok) {
+        console.error(data);
+        setMovies([]);
+        setLoading(false);
+        return;
+      }
 
+      setMovies(data.recommendations || []);
       setLoading(false);
 
     } catch (error) {
@@ -77,51 +85,52 @@ const MoviesPage = () => {
     }
   }
 
-  // -----------------------------
-  // BACK BUTTON
-  // -----------------------------
-
-  const handleBackToGenres = () => {
-    navigate("/genres");
-  };
-
-  // -----------------------------
-  // LOADING UI
-  // -----------------------------
+  /* -----------------------------------
+      LOADING UI
+  ----------------------------------- */
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
-        <h2 className="text-xl">Loading AI Movie Recommendations...</h2>
+        <h2 className="text-xl">
+          Loading AI Movie Recommendations...
+        </h2>
       </div>
     );
   }
 
-  // -----------------------------
-  // UI
-  // -----------------------------
+  /* -----------------------------------
+      UI
+  ----------------------------------- */
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
 
       {/* HEADER */}
-      <div className="p-6 border-b border-gray-700">
+      <div className="p-6 border-b border-gray-700 flex justify-between items-center">
 
-        <h1 className="text-2xl md:text-3xl font-bold">
-          AI Movie Recommendations
-        </h1>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold">
+            AI Movie Recommendations
+          </h1>
 
-        <p className="text-white/60 mt-2">
-          Based on your mood & language • {movies.length} results
-        </p>
+          <p className="text-white/60 mt-1">
+            Based on your preferences • {movies.length} movies found
+          </p>
+        </div>
+
+        <button
+          onClick={handleBackToGenres}
+          className="px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10"
+        >
+          ← Back
+        </button>
 
       </div>
 
       {/* GRID */}
-      <div className="flex flex lg:flex-row p-6 gap-6">
-        <div className="flex-1">
-          <MoviesGrid movies={movies} />
-        </div>
+      <div className="p-6">
+        <MoviesGrid movies={movies} />
       </div>
 
       {/* MOBILE TAGS */}
