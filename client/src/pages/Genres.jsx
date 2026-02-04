@@ -70,7 +70,7 @@ export default function Genres() {
                 navigate("/home");
         }
     }
-
+                                          
     function handleBack() {
         navigate("/language");
     }

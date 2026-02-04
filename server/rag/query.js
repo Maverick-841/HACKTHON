@@ -1,25 +1,43 @@
-import { Chroma } from "@langchain/community/vectorstores/chroma";
-import { OllamaEmbeddings } from "@langchain/ollama";
+import express from "express";
+import { searchVectorDB } from "../rag/query.js";
 
+const router = express.Router();
 
+router.post("/recommend", async (req, res) => {
 
-
-export async function searchVectorDB(query) {
   try {
-    const embeddings = new OllamaEmbeddings({
-      model: "mistral"
+    const { mood, languages = [], category } = req.body;
+
+    const query = `${mood} ${languages.join(" ")} ${category}`;
+
+    const docs = await searchVectorDB(query);
+
+    // ✅ HARD FILTER USING METADATA
+    const filtered = docs.filter(d => {
+
+      const item = d.metadata;
+
+      const matchMood = item.mood === mood;
+
+      const matchCategory =
+        item.category.toLowerCase() === category.toLowerCase();
+
+      const matchLanguage =
+        languages.length === 0 ||
+        languages.includes(item.language);
+
+      return matchMood && matchCategory && matchLanguage;
     });
 
-    const db = await Chroma.fromExistingCollection(
-      embeddings,
-      { collectionName: "content-db" }
-    );
+    res.json({
+      recommendations: filtered.map(d => d.metadata)
+    });
 
-    const results = await db.similaritySearch(query, 5);
-    return results;
-
-  } catch (error) {
-    console.error("SEARCH VECTOR ERROR:", error);
-    return [];
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Recommendation failed" });
   }
-}
+
+});
+
+export default router;

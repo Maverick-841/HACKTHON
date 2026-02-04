@@ -4,7 +4,7 @@ import React, { createContext, useState, useContext } from "react";
 // 1️⃣ Create context
 export const ShopContext = createContext();
 
-// 2️⃣ Create provider component
+// 2️⃣ Create provider component                                   
 export const ShopProvider = ({ children }) => {
 
   // 🔐 Auth token

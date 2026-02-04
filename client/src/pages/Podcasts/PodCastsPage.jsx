@@ -59,7 +59,9 @@ const PodCastsPage = () => {
           body: JSON.stringify({
             mood: activeMood,
             languages: userPreferences.selectedLanguages,
-            category: "Podcasts"
+            category: userPreferences.selectedContentType
+
+
           })
         }
       );

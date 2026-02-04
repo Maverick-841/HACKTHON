@@ -59,7 +59,9 @@ const MusicPage = () => {
           body: JSON.stringify({
             mood: activeMood,
             languages: userPreferences.selectedLanguages,
-            category: "Music"
+           category: userPreferences.selectedContentType
+
+
           })
         }
       );

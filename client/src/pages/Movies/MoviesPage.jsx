@@ -12,7 +12,7 @@ const MoviesPage = () => {
   // -----------------------------
   // LOAD SAVED MOOD
   // -----------------------------
-
+                     
   const activeMood =
     userPreferences.selectedMood ||
     localStorage.getItem("selectedMood");
@@ -57,7 +57,9 @@ const MoviesPage = () => {
           body: JSON.stringify({
             mood: activeMood,
             languages: userPreferences.selectedLanguages,
-            category: "Movies"
+           category: userPreferences.selectedContentType
+
+
           })
         }
       );

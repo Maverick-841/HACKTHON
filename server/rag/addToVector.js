@@ -9,7 +9,7 @@ export async function addToVectorDB(item) {
   const embeddings = new OllamaEmbeddings({
     model: "mistral"
   });
-
+                                
   const db = await Chroma.fromExistingCollection(
     embeddings,
     { collectionName: "content-db" }

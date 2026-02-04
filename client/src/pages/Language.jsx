@@ -23,7 +23,7 @@ export default function Language() {
 
     function handleSelect(item) {
         const newSelection = selectedItems.includes(item)
-            ? selectedItems.filter((i) => i !== item)
+            ? selectedItems.filter((i) => i !== item)             
             : [...selectedItems, item];
 
         setSelectedItems(newSelection);

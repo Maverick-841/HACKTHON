@@ -38,7 +38,7 @@ export default function Mode() {
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
-    }
+    }                   
   }
 
   function handleMoodSelect(moodLabel) {

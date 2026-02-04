@@ -46,8 +46,11 @@ const AnimePage = () => {
   ----------------------------------- */
 
   useEffect(() => {
+  if (activeMood) {
     fetchAIAnime();
-  }, []);
+  }
+}, [activeMood, userPreferences.selectedLanguages]);
+
 
   async function fetchAIAnime() {
     try {
@@ -59,11 +62,13 @@ const AnimePage = () => {
           body: JSON.stringify({
             mood: activeMood,
             languages: userPreferences.selectedLanguages,
-            category: "Anime"
+          category: "Anime"
+
+
           })
         }
       );
-
+                
       const data = await res.json();
       setAnimes(data.recommendations);
       setLoading(false);

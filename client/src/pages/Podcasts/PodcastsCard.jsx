@@ -1,16 +1,22 @@
-import PodcastsCard from "./PodcastsCard";
+const PodcastsCard = ({ podcast }) => {
 
-const PodcastsGrid = ({ podcasts }) => {
   return (
-    <div className="grid md:grid-cols-4 gap-4">
-      {podcasts.map((podcast) => (
-        <PodcastsCard
-          key={podcast.id}
-          podcast={podcast}
-        />
-      ))}
+    <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 hover:shadow-lg transition">
+
+      {/* TITLE */}
+      <h3 className="text-lg font-semibold text-white mb-1">
+        {podcast.title}
+      </h3>
+
+      {/* DESCRIPTION */}
+      <p className="text-sm text-gray-300 mb-2">
+        {podcast.description}
+      </p>
+
+      {/* META TAGS */}
+
     </div>
   );
 };
 
-export default PodcastsGrid;
+export default PodcastsCard;

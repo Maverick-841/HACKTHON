@@ -59,7 +59,9 @@ const WebseriesPage = () => {
                     body: JSON.stringify({
                         mood: activeMood,
                         languages: userPreferences.selectedLanguages,
-                        category: "Web Series"
+                category: userPreferences.selectedContentType
+
+
                     })
                 }
             );

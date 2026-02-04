@@ -59,7 +59,9 @@ const DocumentaryPage = () => {
                     body: JSON.stringify({
                         mood: activeMood,
                         languages: userPreferences.selectedLanguages,
-                        category: "Documentaries"
+                        category: userPreferences.selectedContentType
+
+
                     })
                 }
             );

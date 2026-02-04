@@ -59,7 +59,9 @@ const BooksPage = () => {
           body: JSON.stringify({
             mood: activeMood,
             languages: userPreferences.selectedLanguages,
-            category: "Books"
+            category: userPreferences.selectedContentType
+
+
           })
         }
       );

@@ -3,56 +3,41 @@ import { searchVectorDB } from "../rag/query.js";
 
 const router = express.Router();
 
-/* -----------------------------------
-   AI RECOMMENDATION ROUTE (HYBRID RAG)
------------------------------------ */
-
 router.post("/recommend", async (req, res) => {
-  try {
 
+  try {
     const { mood, languages = [], category } = req.body;
 
-    // Build semantic search query
-    const searchQuery = `${mood} ${category}`;
+    const query = `${mood} ${languages.join(" ")} ${category}`;
 
-    // Get similar docs from vector DB
-    const docs = await searchVectorDB(searchQuery);
+    const docs = await searchVectorDB(query);
 
-    // Convert to metadata objects
-    let items = docs.map(d => d.metadata);
+    // ✅ HARD FILTER USING METADATA
+    const filtered = docs.filter(d => {
 
-    /* -----------------------------
-       STRICT LANGUAGE FILTER
-    ----------------------------- */
+      const item = d.metadata;
 
-    if (languages.length > 0) {
-      items = items.filter(item =>
-        languages.some(lang =>
-          item.language
-            ?.toLowerCase()
-            .includes(lang.toLowerCase())
-        )
-      );
-    }
+      const matchMood = item.mood === mood;
 
-    /* -----------------------------
-       STRICT CATEGORY FILTER
-    ----------------------------- */
+      const matchCategory =
+        item.category.toLowerCase() === category.toLowerCase();
 
-    if (category) {
-      items = items.filter(
-        item =>
-          item.category
-            ?.toLowerCase() === category.toLowerCase()
-      );
-    }
+      const matchLanguage =
+        languages.length === 0 ||
+        languages.includes(item.language);
 
-    res.json({ recommendations: items });
+      return matchMood && matchCategory && matchLanguage;
+    });
 
-  } catch (error) {
-    console.error("AI Recommend Error:", error);
-    res.status(500).json({ recommendations: [] });
+    res.json({
+      recommendations: filtered.map(d => d.metadata)
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Recommendation failed" });
   }
+
 });
 
 export default router;
