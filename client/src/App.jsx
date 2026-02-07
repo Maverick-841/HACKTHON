@@ -80,44 +80,40 @@ const RedirectToPrivacy = () => {
 
 const App = () => {
   return (
-    // ✅ WRAP EVERYTHING WITH ShopProvider
-    <ShopProvider>
-      <div className="min-h-screen bg-gradient-to-b from-[#0B1020] to-[#0F172A]">
-        <Routes>
+    <div className="min-h-screen bg-gradient-to-b from-[#0B1020] to-[#0F172A]">
+      <Routes>
 
-          {/* WITH Navbar */}
-          <Route element={<NavbarLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/features" element={<Features />} />
-            <Route path="/about" element={<About />} />
-          </Route>
+        {/* WITH Navbar */}
+        <Route element={<NavbarLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/about" element={<About />} />
+        </Route>
 
-          {/* WITHOUT Navbar */}
-          <Route element={<NoNavbarLayout />}>
-            <Route path="/mode" element={<Mode />} />
-            <Route path="/language" element={<Language />} />
-            <Route path="/genres" element={<Genres />} />
+        {/* WITHOUT Navbar */}
+        <Route element={<NoNavbarLayout />}>
+          <Route path="/mode" element={<Mode />} />
+          <Route path="/language" element={<Language />} />
+          <Route path="/genres" element={<Genres />} />
 
-            {/* ✅ UPDATE THESE ROUTES TO MATCH WHAT Genres.jsx NAVIGATES TO */}
-            <Route path="/movies" element={<MoviesPage />} />
-            <Route path="/music" element={<MusicPage />} />
-            <Route path="/books" element={<BooksPage />} />
-            <Route path="/podcasts" element={<PodCastsPage />} />
-        
-            <Route path="/anime" element={<AnimePage />} />
-            <Route path="/webseries" element={<WebseriesPage />} />
-            <Route path="/documentaries" element={<DocumentaryPage/>} />
+          {/* ✅ UPDATE THESE ROUTES TO MATCH WHAT Genres.jsx NAVIGATES TO */}
+          <Route path="/movies" element={<MoviesPage />} />
+          <Route path="/music" element={<MusicPage />} />
+          <Route path="/books" element={<BooksPage />} />
+          <Route path="/podcasts" element={<PodCastsPage />} />
 
-            <Route path="/login" element={<Login />} />
-            <Route path="/privacy" element={<Privacy />} />
+          <Route path="/anime" element={<AnimePage />} />
+          <Route path="/webseries" element={<WebseriesPage />} />
+          <Route path="/documentaries" element={<DocumentaryPage />} />
 
-            {/* Add this redirect route */}
-            <Route path="/privacy.html" element={<RedirectToPrivacy />} />
-          </Route>
-          documentaries
-        </Routes>
-      </div>
-    </ShopProvider>
+          <Route path="/login" element={<Login />} />
+          <Route path="/privacy" element={<Privacy />} />
+
+          {/* Add this redirect route */}
+          <Route path="/privacy.html" element={<RedirectToPrivacy />} />
+        </Route>
+      </Routes>
+    </div>
   );
 };
 

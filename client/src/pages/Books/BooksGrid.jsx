@@ -5,7 +5,7 @@ const BooksGrid = ({ books }) => {
     <div className="grid md:grid-cols-4 gap-4 p-4">
       {books.map((book) => (
         <BookCard
-          key={book.title}
+          key={book.id}
           book={book}
         />
       ))}

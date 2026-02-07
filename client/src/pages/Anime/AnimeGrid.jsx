@@ -5,7 +5,7 @@ const AnimeGrid = ({ animes }) => {
     <div className="grid md:grid-cols-4 gap-4 p-4">
       {animes.map((anime) => (
         <AnimeCard
-          key={anime.title}
+          key={anime.id}
           anime={anime}
         />
       ))}

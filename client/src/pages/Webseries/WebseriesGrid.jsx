@@ -5,7 +5,7 @@ const WebseriesGrid = ({ series }) => {
     <div className="grid md:grid-cols-4 gap-4 p-4">
       {series.map((item) => (
         <WebseriesCard
-          key={item.title}
+          key={item.id}
           series={item}
         />
       ))}

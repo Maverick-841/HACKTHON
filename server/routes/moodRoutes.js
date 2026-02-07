@@ -136,18 +136,37 @@ router.post("/recommend", async (req, res) => {
     // Pass filter to Chroma
     const docs = await searchVectorDB(query, chromaFilter);
 
-    // 2. Relaxed JS Filter (Double check, but allow partial matches)
-    const filtered = docs.filter(d => {
+    // 2. ABSOLUTELY Strict Filter (Metadata Must Match Exactly)
+    const finalResults = docs.filter(d => {
       const item = d.metadata || {};
 
-      // Fuzzy match for mood (e.g. "motivation" matches "Need Motivation")
-      const dbMood = (item.mood || "").toLowerCase();
-      const matchMood = dbMood.includes(moodInput) || moodInput.includes(dbMood);
+      // 1. Category (Strict)
+      const dbCat = (item.category || "").toLowerCase();
+      const userCat = categoryInput.toLowerCase();
+      if (dbCat !== userCat) return false;
 
-      return matchMood;
+      // 2. Language (Strict)
+      const dbLang = (item.language || "").toLowerCase();
+      const userLang = (languageInput || "").toLowerCase();
+      if (userLang && dbLang !== userLang) return false;
+
+      // 3. Mood (Strict - normalized check)
+      const dbMood = (item.mood || "").toLowerCase();
+      const normalizedMoodInput = moodInput.toLowerCase();
+
+      // Strict equality or inclusion (e.g. "Feeling Low" matches "Feeling Low")
+      const matchMood = dbMood === normalizedMoodInput ||
+        dbMood.includes(normalizedMoodInput) ||
+        normalizedMoodInput.includes(dbMood);
+
+      if (!matchMood) return false;
+
+      return true;
     });
 
-    const finalResults = filtered.length ? filtered : docs;
+    if (finalResults.length === 0) {
+      console.warn(`STRICT FILTER: No matches for Cat=${categoryInput}, Lang=${languageInput}, Mood=${moodInput}`);
+    }
 
     const uniqueMap = new Map();
 

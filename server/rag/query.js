@@ -21,7 +21,7 @@ export async function searchVectorDB(query, filter = undefined) {
   );
 
   // Pass filter if provided
-  const results = await db.similaritySearch(query, 20, filter);
+  const results = await db.similaritySearch(query, 100, filter);
 
   return results;
 }

@@ -11,13 +11,11 @@ const PlatformModal = ({ isOpen, onClose, title, category }) => {
         movie: [
             { name: "Netflix", color: "bg-red-600 hover:bg-red-700", url: `https://www.netflix.com/search?q=${searchQuery}`, icon: "N" },
             { name: "Amazon Prime", color: "bg-blue-500 hover:bg-blue-600", url: `https://www.amazon.com/s?k=${searchQuery}&i=instant-video`, icon: "Prime" },
-            { name: "YouTube", color: "bg-red-500 hover:bg-red-600", url: `https://www.youtube.com/results?search_query=${searchQuery}`, icon: "▶" },
             { name: "Disney+", color: "bg-blue-900 hover:bg-blue-800", url: `https://www.disneyplus.com/search?q=${searchQuery}`, icon: "D+" },
             { name: "Hulu", color: "bg-green-500 hover:bg-green-600", url: `https://www.hulu.com/search?q=${searchQuery}`, icon: "Hulu" }
         ],
         music: [
             { name: "Spotify", color: "bg-green-500 hover:bg-green-600", url: `https://open.spotify.com/search/${searchQuery}`, icon: "♫" },
-            { name: "YouTube Music", color: "bg-red-600 hover:bg-red-700", url: `https://music.youtube.com/search?q=${searchQuery}`, icon: "▶Music" },
             { name: "Apple Music", color: "bg-pink-500 hover:bg-pink-600", url: `https://music.apple.com/us/search?term=${searchQuery}`, icon: "" },
             { name: "Amazon Music", color: "bg-blue-400 hover:bg-blue-500", url: `https://music.amazon.com/search/${searchQuery}`, icon: "Amz" }
         ],
@@ -36,7 +34,6 @@ const PlatformModal = ({ isOpen, onClose, title, category }) => {
         ],
         documentary: [
             { name: "Netflix", color: "bg-red-600 hover:bg-red-700", url: `https://www.netflix.com/search?q=${searchQuery}`, icon: "N" },
-            { name: "YouTube", color: "bg-red-500 hover:bg-red-600", url: `https://www.youtube.com/results?search_query=${searchQuery}`, icon: "▶" },
             { name: "Amazon Prime", color: "bg-blue-500 hover:bg-blue-600", url: `https://www.amazon.com/s?k=${searchQuery}&i=instant-video`, icon: "Prime" },
             { name: "Discovery+", color: "bg-blue-400 hover:bg-blue-500", url: `https://www.discoveryplus.com/search?q=${searchQuery}`, icon: "D+" }
         ],
@@ -49,8 +46,7 @@ const PlatformModal = ({ isOpen, onClose, title, category }) => {
         ],
         podcast: [
             { name: "Spotify", color: "bg-green-500 hover:bg-green-600", url: `https://open.spotify.com/search/${searchQuery}`, icon: "♫" },
-            { name: "Apple Podcasts", color: "bg-purple-500 hover:bg-purple-600", url: `https://podcasts.apple.com/us/search?term=${searchQuery}`, icon: "" },
-            { name: "YouTube", color: "bg-red-500 hover:bg-red-600", url: `https://www.youtube.com/results?search_query=${searchQuery} podcast`, icon: "▶" }
+            { name: "Apple Podcasts", color: "bg-purple-500 hover:bg-purple-600", url: `https://podcasts.apple.com/us/search?term=${searchQuery}`, icon: "" }
         ]
     };
 

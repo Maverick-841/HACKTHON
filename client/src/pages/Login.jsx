@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -66,7 +67,7 @@ export function Login() {
                 >
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold text-white mb-2">
-                            {isLogin ? 'Welcome Back' : 'Join Zesty'}
+                            {isLogin ? 'Welcome Back' : 'Join MoodMitra'}
                         </h1>
                         <p className="text-white/60">
                             {isLogin

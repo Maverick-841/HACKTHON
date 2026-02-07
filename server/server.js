@@ -1,4 +1,6 @@
 import express from "express";
+import dns from "dns";
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
@@ -9,7 +11,10 @@ dotenv.config();
 
 const app = express();
 
+connectDB();
+
 app.use(cors());
+
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);

@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ShopContext } from '../context/shopcontext';
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 
 import { Tv, BookOpen, Star, Cpu, ArrowRight, Play, Zap, Activity, Music2, Clapperboard, ScanEye, BrainCircuit, Navigation, Brain, BarChart3 } from 'lucide-react';  // slightly different icons
 
 export default function Home() {
+    const { token } = useContext(ShopContext);
     const culturalDomains = [
         {
             icon: Clapperboard,  // was Film
@@ -128,7 +130,11 @@ export default function Home() {
 
 
     const handleStartJourney = () => {
-        navigate('/Mode');
+        if (!token) {
+            navigate('/login');
+        } else {
+            navigate('/Mode');
+        }
     };
 
     return (
@@ -200,7 +206,7 @@ export default function Home() {
                                     width="100%"
                                     height="100%"
                                     src={`https://www.youtube.com/embed/5QOY6OIpbMQ${videoPlayed ? '?autoplay=1&rel=0&modestbranding=1&controls=1' : '?rel=0&modestbranding=1&controls=1'}`}
-                                    title="How Zesty Works"
+                                    title="How MoodMitra Works"
                                     frameBorder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     allowFullScreen

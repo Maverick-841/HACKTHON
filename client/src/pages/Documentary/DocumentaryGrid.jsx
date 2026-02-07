@@ -5,7 +5,7 @@ const DocumentaryGrid = ({ documentaries }) => {
     <div className="grid md:grid-cols-4 gap-4 p-4">
       {documentaries.map((doc) => (
         <DocumentaryCard
-          key={doc.title}
+          key={doc.id}
           doc={doc}
         />
       ))}

@@ -5,7 +5,7 @@ const PodcastsGrid = ({ podcasts }) => {
     <div className="grid md:grid-cols-4 gap-4 p-4">
       {podcasts.map((podcast) => (
         <PodcastsCard
-          key={podcast.title}
+          key={podcast.id}
           podcast={podcast}
         />
       ))}
