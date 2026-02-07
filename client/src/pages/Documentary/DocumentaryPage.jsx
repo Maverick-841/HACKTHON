@@ -33,13 +33,7 @@ const DocumentaryPage = () => {
         }
     }, [userPreferences.selectedMood]);
 
-    /* -----------------------------------
-        BACK BUTTON
-    ----------------------------------- */
 
-    const handleBackToGenres = () => {
-        navigate("/genres");
-    };
 
     /* -----------------------------------
         FETCH AI DOCUMENTARIES
@@ -118,12 +112,7 @@ const DocumentaryPage = () => {
                     </p>
                 </div>
 
-                <button
-                    onClick={handleBackToGenres}
-                    className="px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10"
-                >
-                    ← Back
-                </button>
+
 
             </div>
 

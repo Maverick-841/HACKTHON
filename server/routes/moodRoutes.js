@@ -113,10 +113,7 @@ router.post("/recommend", async (req, res) => {
     if (categoryMap[categoryInput.toLowerCase()]) {
       categoryFixed = categoryMap[categoryInput.toLowerCase()];
     } else {
-      // Fallback: capitalize first letter of each word? or just first letter
-      // Existing logic was: categoryInput.charAt(0).toUpperCase() + categoryInput.slice(1).toLowerCase();
-      // This breaks "Web Series" -> "Web series".
-      // Let's capital case each word if not in map.
+      // Fallback: Title Case each word if not in map
       categoryFixed = categoryInput.replace(/\w\S*/g, (txt) => {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
       });
@@ -147,8 +144,6 @@ router.post("/recommend", async (req, res) => {
       const dbMood = (item.mood || "").toLowerCase();
       const matchMood = dbMood.includes(moodInput) || moodInput.includes(dbMood);
 
-      // We already filtered by category/language in Chroma, but safe to keep relaxed check
-      // or just trust Chroma. Let's trust Chroma for Cat/Lang but keep Mood check.
       return matchMood;
     });
 

@@ -33,13 +33,7 @@ const MoviesPage = () => {
     }
   }, [userPreferences.selectedMood]);
 
-  /* -----------------------------------
-      BACK BUTTON
-  ----------------------------------- */
 
-  const handleBackToGenres = () => {
-    navigate("/genres");
-  };
 
   /* -----------------------------------
       FETCH AI MOVIES
@@ -105,7 +99,7 @@ const MoviesPage = () => {
   ----------------------------------- */
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white pb-12">
 
       {/* HEADER */}
       <div className="p-6 border-b border-gray-700 flex justify-between items-center">
@@ -119,13 +113,6 @@ const MoviesPage = () => {
             Based on your preferences • {movies.length} movies found
           </p>
         </div>
-
-        <button
-          onClick={handleBackToGenres}
-          className="px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10"
-        >
-          ← Back
-        </button>
 
       </div>
 

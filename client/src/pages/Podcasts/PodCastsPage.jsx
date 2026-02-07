@@ -33,13 +33,7 @@ const PodCastsPage = () => {
     }
   }, [userPreferences.selectedMood]);
 
-  /* -----------------------------------
-      BACK BUTTON
-  ----------------------------------- */
 
-  const handleBackToGenres = () => {
-    navigate("/genres");
-  };
 
   /* -----------------------------------
       FETCH AI PODCASTS
@@ -106,10 +100,12 @@ const PodCastsPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
 
       {/* HEADER */}
-      <div className="p-6 border-b border-gray-700 flex justify-between items-center">
+      <div className="p-6 border-b border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">
+
+
+          <h1 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
             Podcast Recommendations
           </h1>
 
@@ -118,12 +114,12 @@ const PodCastsPage = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleBackToGenres}
-          className="px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10"
-        >
-          ← Back
-        </button>
+        <div className="flex flex-col items-end gap-2">
+
+          <div className="text-xs text-gray-500">
+            {podcasts.length} Recommendations Found
+          </div>
+        </div>
 
       </div>
 
@@ -131,6 +127,8 @@ const PodCastsPage = () => {
       <div className="p-6">
         <PodcastsGrid podcasts={podcasts} />
       </div>
+
+
 
       {/* MOBILE TAGS */}
       <div className="p-6 border-t border-gray-700 md:hidden">
