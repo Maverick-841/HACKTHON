@@ -1,0 +1,17 @@
+{
+  "name": "hackathon-project",
+  "version": "1.0.0",
+  "description": "Full-stack application with client and server",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm --prefix client run dev\" \"npm --prefix server run dev\"",
+    "build": "npm --prefix client run build && npm --prefix server install",
+    "start": "npm --prefix server run start",
+    "server": "npm --prefix server run start",
+    "client": "npm --prefix client run dev",
+    "install": "npm install --prefix client && npm install --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.2"
+  }
+}

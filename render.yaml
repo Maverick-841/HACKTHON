@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: hackathon-backend
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
