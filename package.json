@@ -12,6 +12,6 @@
     "install": "npm install --prefix client && npm install --prefix server"
   },
   "devDependencies": {
-    "concurrently": "^9.2.2"
+    "concurrently": "^8.2.2"
   }
 }
