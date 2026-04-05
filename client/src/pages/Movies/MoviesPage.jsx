@@ -1,59 +1,35 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
-import MoviesGrid from "./MoviesGrid";
+import { useEffect, useState } from "react";
+import MovieCard from "./MovieCard";
 import { useShopContext } from "../../context/shopcontext";
+import RecommendationResults from "../../components/RecommendationResults";
 
 const MoviesPage = () => {
-
-  const navigate = useNavigate();
   const { userPreferences } = useShopContext();
 
-  /* -----------------------------------
-      LOAD SAVED MOOD
-  ----------------------------------- */
-
   const activeMood =
-    userPreferences.selectedMood ||
-    localStorage.getItem("selectedMood");
+    userPreferences.selectedMood || localStorage.getItem("selectedMood");
 
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  /* -----------------------------------
-      SAVE MOOD
-  ----------------------------------- */
-
   useEffect(() => {
     if (userPreferences.selectedMood) {
-      localStorage.setItem(
-        "selectedMood",
-        userPreferences.selectedMood
-      );
+      localStorage.setItem("selectedMood", userPreferences.selectedMood);
     }
   }, [userPreferences.selectedMood]);
-
-
-
-  /* -----------------------------------
-      FETCH AI MOVIES
-  ----------------------------------- */
 
   useEffect(() => {
     async function fetchAIMovies() {
       try {
-        const res = await fetch(
-          "http://localhost:5000/api/mood/recommend",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              mood: activeMood,
-              language: userPreferences.selectedLanguages?.[0] || "English",
-              category: "Movies"
-            })
-          }
-        );
+        const res = await fetch("http://localhost:5000/api/mood/recommend", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mood: activeMood,
+            language: userPreferences.selectedLanguages?.[0] || "English",
+            category: "Movies",
+          }),
+        });
 
         const data = await res.json();
 
@@ -66,7 +42,6 @@ const MoviesPage = () => {
 
         setMovies(data.recommendations || []);
         setLoading(false);
-
       } catch (error) {
         console.log("AI Movie Error:", error);
         setLoading(false);
@@ -74,78 +49,22 @@ const MoviesPage = () => {
     }
 
     if (activeMood) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLoading(true);
       fetchAIMovies();
     }
   }, [activeMood, userPreferences.selectedLanguages]);
 
-  /* -----------------------------------
-      LOADING UI
-  ----------------------------------- */
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
-        <h2 className="text-xl">
-          Loading AI Movie Recommendations...
-        </h2>
-      </div>
-    );
-  }
-
-  /* -----------------------------------
-      UI
-  ----------------------------------- */
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white pb-12">
-
-      {/* HEADER */}
-      <div className="p-6 border-b border-gray-700 flex justify-between items-center">
-
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">
-            AI Movie Recommendations
-          </h1>
-
-          <p className="text-white/60 mt-1">
-            Based on your preferences • {movies.length} movies found
-          </p>
-        </div>
-
-      </div>
-
-      {/* GRID */}
-      <div className="p-6">
-        <MoviesGrid movies={movies} />
-      </div>
-
-      {/* MOBILE TAGS */}
-      <div className="p-6 border-t border-gray-700 md:hidden">
-
-        <div className="flex flex-wrap gap-2">
-
-          {activeMood && (
-            <span className="px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400 text-sm">
-              Mood: {activeMood}
-            </span>
-          )}
-
-          {userPreferences.selectedLanguages?.map((lang, index) => (
-            <span
-              key={index}
-              className="px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400 text-sm"
-            >
-              {lang}
-            </span>
-          ))}
-
-        </div>
-
-      </div>
-
-    </div>
+    <RecommendationResults
+      title="AI Movie Recommendations"
+      description="Clear movie suggestions matched to your mood and language. Use All to see everything, or narrow the list by language."
+      categoryLabel="Movies"
+      items={movies}
+      loading={loading}
+      selectedMood={activeMood}
+      selectedLanguages={userPreferences.selectedLanguages || []}
+      emptyMessage="Try changing the mood or category if this looks too narrow."
+      renderCard={(movie) => <MovieCard key={movie.id} movie={movie} />}
+    />
   );
 };
 

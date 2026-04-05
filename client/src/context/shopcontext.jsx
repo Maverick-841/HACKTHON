@@ -32,7 +32,7 @@ export const ShopProvider = ({ children }) => {
   const [aiResult, setAiResult] = useState(null);
 
   // Backend URL
-  const backendUrl = import.meta.env.VITE_API_URL;
+  const backendUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api';
 
   // Save token
   const saveToken = (newToken) => {

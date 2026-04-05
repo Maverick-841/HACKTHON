@@ -8,7 +8,7 @@ import {
     Podcast,
     Tv,
     Zap,
-    FileVideo,
+    Layers,
     Clapperboard
 } from "lucide-react";
 import { useShopContext } from "../context/shopcontext";
@@ -21,6 +21,7 @@ export default function Genres() {
 
     // Content types with icons (this is your "genres" selection)
     const contentTypes = [
+        { label: "All Categories", icon: <Layers className="w-6 h-6" />, color: "from-cyan-500 to-blue-500" },
         { label: "Movies", icon: <Film className="w-6 h-6" />, color: "from-pink-500 to-rose-500" },
         { label: "Music", icon: <Music className="w-6 h-6" />, color: "from-blue-500 to-cyan-500" },
         { label: "Books", icon: <Book className="w-6 h-6" />, color: "from-emerald-500 to-green-500" },
@@ -44,6 +45,9 @@ export default function Genres() {
         updatePreferences({ selectedContentType});
         // Navigate to the corresponding page based on selection
         switch (selectedContentType.toLowerCase()) {
+            case "all categories":
+                navigate("/all-results");
+                break;
             case "movies":
                 navigate("/movies");
                 break;

@@ -1,152 +1,71 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
-import DocumentaryGrid from "./DocumentaryGrid";
+import { useEffect, useState } from "react";
+import DocumentaryCard from "./DocumentaryCard";
 import { useShopContext } from "../../context/shopcontext";
+import RecommendationResults from "../../components/RecommendationResults";
 
 const DocumentaryPage = () => {
+  const { userPreferences } = useShopContext();
 
-    const navigate = useNavigate();
-    const { userPreferences } = useShopContext();
+  const activeMood =
+    userPreferences.selectedMood || localStorage.getItem("selectedMood");
 
-    /* -----------------------------------
-        LOAD SAVED MOOD
-    ----------------------------------- */
+  const [documentaries, setDocumentaries] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const activeMood =
-        userPreferences.selectedMood ||
-        localStorage.getItem("selectedMood");
+  useEffect(() => {
+    if (userPreferences.selectedMood) {
+      localStorage.setItem("selectedMood", userPreferences.selectedMood);
+    }
+  }, [userPreferences.selectedMood]);
 
-    const [documentaries, setDocumentaries] = useState([]);
-    const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    async function fetchAIDocumentaries() {
+      try {
+        const res = await fetch("http://localhost:5000/api/mood/recommend", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mood: activeMood,
+            language: userPreferences.selectedLanguages?.[0] || "English",
+            category: "Documentaries",
+          }),
+        });
 
-    /* -----------------------------------
-        SAVE MOOD
-    ----------------------------------- */
+        const data = await res.json();
 
-    useEffect(() => {
-        if (userPreferences.selectedMood) {
-            localStorage.setItem(
-                "selectedMood",
-                userPreferences.selectedMood
-            );
-        }
-    }, [userPreferences.selectedMood]);
-
-
-
-    /* -----------------------------------
-        FETCH AI DOCUMENTARIES
-    ----------------------------------- */
-
-    useEffect(() => {
-        async function fetchAIDocumentaries() {
-            try {
-                const res = await fetch(
-                    "http://localhost:5000/api/mood/recommend",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            mood: activeMood,
-                            language: userPreferences.selectedLanguages?.[0] || "English",
-                            category: "Documentaries"
-                        })
-                    }
-                );
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    console.error(data);
-                    setDocumentaries([]);
-                    setLoading(false);
-                    return;
-                }
-
-                setDocumentaries(data.recommendations || []);
-                setLoading(false);
-
-            } catch (error) {
-                console.log(error);
-                setLoading(false);
-            }
+        if (!res.ok) {
+          console.error(data);
+          setDocumentaries([]);
+          setLoading(false);
+          return;
         }
 
-        if (activeMood) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setLoading(true);
-            fetchAIDocumentaries();
-        }
-    }, [activeMood, userPreferences.selectedLanguages]);
-
-    /* -----------------------------------
-        LOADING UI
-    ----------------------------------- */
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center text-white">
-                Loading AI Documentary Recommendations...
-            </div>
-        );
+        setDocumentaries(data.recommendations || []);
+        setLoading(false);
+      } catch (error) {
+        console.log("AI Documentary Error:", error);
+        setLoading(false);
+      }
     }
 
-    /* -----------------------------------
-        UI
-    ----------------------------------- */
+    if (activeMood) {
+      fetchAIDocumentaries();
+    }
+  }, [activeMood, userPreferences.selectedLanguages]);
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white">
-
-            {/* HEADER */}
-            <div className="p-6 border-b border-gray-700 flex justify-between items-center">
-
-                <div>
-                    <h1 className="text-2xl md:text-3xl font-bold">
-                        Documentary Recommendations
-                    </h1>
-
-                    <p className="text-white/60 mt-1">
-                        Based on your preferences • {documentaries.length} documentaries found
-                    </p>
-                </div>
-
-
-
-            </div>
-
-            {/* GRID */}
-            <div className="p-6">
-                <DocumentaryGrid documentaries={documentaries} />
-            </div>
-
-            {/* MOBILE TAGS */}
-            <div className="p-6 border-t border-gray-700 md:hidden">
-
-                <div className="flex flex-wrap gap-2">
-
-                    {activeMood && (
-                        <span className="px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400 text-sm">
-                            Mood: {activeMood}
-                        </span>
-                    )}
-
-                    {userPreferences.selectedLanguages?.map((lang, index) => (
-                        <span
-                            key={index}
-                            className="px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400 text-sm"
-                        >
-                            {lang}
-                        </span>
-                    ))}
-
-                </div>
-
-            </div>
-
-        </div>
-    );
+  return (
+    <RecommendationResults
+      title="Documentary Recommendations"
+      description="Browse every documentary result at once, then narrow down by language if you want more focus."
+      categoryLabel="Documentaries"
+      items={documentaries}
+      loading={loading}
+      selectedMood={activeMood}
+      selectedLanguages={userPreferences.selectedLanguages || []}
+      emptyMessage="No documentary recommendations matched this selection. Try another mood or language."
+      renderCard={(doc) => <DocumentaryCard key={doc.id} doc={doc} />}
+    />
+  );
 };
 
 export default DocumentaryPage;

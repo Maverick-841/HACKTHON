@@ -24,6 +24,7 @@ import { Login } from './pages/Login';
 import { Privacy } from './components/privacy';
 import { ShopProvider } from './context/shopcontext';
 import DocumentaryPage from './pages/Documentary/DocumentaryPage';
+import AllResultsPage from './pages/AllResultsPage';
 
 /* ---------- Layouts ---------- */
 
@@ -105,6 +106,7 @@ const App = () => {
           <Route path="/anime" element={<AnimePage />} />
           <Route path="/webseries" element={<WebseriesPage />} />
           <Route path="/documentaries" element={<DocumentaryPage />} />
+          <Route path="/all-results" element={<AllResultsPage />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/privacy" element={<Privacy />} />

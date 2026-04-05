@@ -10,10 +10,11 @@ import { useNavigate } from 'react-router-dom';
 export function Login() {
     const [isLogin, setIsLogin] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
-    const [loading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const { token, setToken, backendUrl } = useContext(ShopContext);
 
     const navigate = useNavigate()
+    const MotionDiv = motion.div;
 
     const [formData, setFormData] = useState({
         email: '',
@@ -23,19 +24,23 @@ export function Login() {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
+        if (loading) return;
+
+        const apiBaseUrl = backendUrl || 'http://127.0.0.1:5000/api';
+        setLoading(true);
 
         try {
             let response;
 
             if (isLogin) {
                 // LOGIN
-                response = await axios.post(`${backendUrl}/auth/login`, {
+                response = await axios.post(`${apiBaseUrl}/auth/login`, {
                     email: formData.email,
                     password: formData.password
                 });
             } else {
                 // SIGN UP
-                response = await axios.post(`${backendUrl}/auth/register`, {
+                response = await axios.post(`${apiBaseUrl}/auth/register`, {
                     name: formData.fullName,
                     email: formData.email,
                     password: formData.password
@@ -50,6 +55,8 @@ export function Login() {
         } catch (error) {
             console.log(error);
             toast.error(error.response?.data?.message || error.message);
+        } finally {
+            setLoading(false);
         }
     };
     useEffect(() => {
@@ -59,7 +66,7 @@ export function Login() {
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-20">
             <div className="max-w-md w-full">
-                <motion.div
+                <MotionDiv
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
@@ -148,7 +155,7 @@ export function Login() {
                             </span>
                         </button>
                     </div>
-                </motion.div>
+                </MotionDiv>
             </div>
         </div>
     );
