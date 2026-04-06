@@ -17,7 +17,8 @@ const PlatformModal = ({ isOpen, onClose, title, category }) => {
         music: [
             { name: "Spotify", color: "bg-green-500 hover:bg-green-600", url: `https://open.spotify.com/search/${searchQuery}`, icon: "♫" },
             { name: "Apple Music", color: "bg-pink-500 hover:bg-pink-600", url: `https://music.apple.com/us/search?term=${searchQuery}`, icon: "" },
-            { name: "Amazon Music", color: "bg-blue-400 hover:bg-blue-500", url: `https://music.amazon.com/search/${searchQuery}`, icon: "Amz" }
+            { name: "Amazon Music", color: "bg-blue-400 hover:bg-blue-500", url: `https://music.amazon.com/search/${searchQuery}`, icon: "Amz" },
+            { name: "YouTube", color: "bg-red-600 hover:bg-red-700", url: `https://www.youtube.com/results?search_query=${searchQuery}`, icon: "▶" }
         ],
         webseries: [
             { name: "Netflix", color: "bg-red-600 hover:bg-red-700", url: `https://www.netflix.com/search?q=${searchQuery}`, icon: "N" },
