@@ -12,6 +12,8 @@ const RecommendationResults = ({
   renderCard,
 }) => {
   const [activeFilter, setActiveFilter] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('title-asc');
 
   const uniqueItems = useMemo(() => {
     const seen = new Set();
@@ -53,6 +55,48 @@ const RecommendationResults = ({
       (item) => (item.language || '').toLowerCase() === effectiveFilter.toLowerCase()
     );
   }, [effectiveFilter, uniqueItems]);
+
+  const searchedItems = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return visibleItems;
+    }
+
+    return visibleItems.filter((item) => {
+      const title = String(item.title || '').toLowerCase();
+      const description = String(item.description || '').toLowerCase();
+      const language = String(item.language || '').toLowerCase();
+      const category = String(item.category || '').toLowerCase();
+
+      return (
+        title.includes(normalizedSearch) ||
+        description.includes(normalizedSearch) ||
+        language.includes(normalizedSearch) ||
+        category.includes(normalizedSearch)
+      );
+    });
+  }, [searchTerm, visibleItems]);
+
+  const finalItems = useMemo(() => {
+    const sorted = [...searchedItems];
+
+    sorted.sort((a, b) => {
+      const titleA = String(a.title || '').toLowerCase();
+      const titleB = String(b.title || '').toLowerCase();
+      const langA = String(a.language || '').toLowerCase();
+      const langB = String(b.language || '').toLowerCase();
+
+      if (sortBy === 'title-desc') return titleB.localeCompare(titleA);
+      if (sortBy === 'language-asc') return langA.localeCompare(langB) || titleA.localeCompare(titleB);
+      if (sortBy === 'language-desc') return langB.localeCompare(langA) || titleA.localeCompare(titleB);
+      return titleA.localeCompare(titleB);
+    });
+
+    return sorted;
+  }, [searchedItems, sortBy]);
+
+  const hasActiveControls = effectiveFilter !== 'All' || searchTerm.trim() !== '' || sortBy !== 'title-asc';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white pb-12">
@@ -119,6 +163,57 @@ const RecommendationResults = ({
               );
             })}
           </div>
+
+          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            <label className="md:col-span-2">
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/60">
+                Search In Results
+              </span>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search title, description, language..."
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none transition focus:border-blue-300/60 focus:ring-2 focus:ring-blue-400/30"
+              />
+            </label>
+
+            <label>
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/60">
+                Sort By
+              </span>
+              <select
+                value={sortBy}
+                onChange={(event) => setSortBy(event.target.value)}
+                className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-2.5 text-sm text-white outline-none transition focus:border-blue-300/60 focus:ring-2 focus:ring-blue-400/30"
+              >
+                <option value="title-asc">Title: A to Z</option>
+                <option value="title-desc">Title: Z to A</option>
+                <option value="language-asc">Language: A to Z</option>
+                <option value="language-desc">Language: Z to A</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-white/70">
+              Showing <span className="font-semibold text-white">{finalItems.length}</span> of{' '}
+              <span className="font-semibold text-white">{uniqueItems.length}</span> total recommendations
+            </p>
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveFilter('All');
+                setSearchTerm('');
+                setSortBy('title-asc');
+              }}
+              disabled={!hasActiveControls}
+              className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Reset Controls
+            </button>
+          </div>
         </div>
 
         <div className="mt-8">
@@ -126,9 +221,9 @@ const RecommendationResults = ({
             <div className="flex min-h-[40vh] items-center justify-center rounded-3xl border border-white/10 bg-white/5 text-white/70 backdrop-blur-xl">
               Loading recommendations...
             </div>
-          ) : visibleItems.length > 0 ? (
+          ) : finalItems.length > 0 ? (
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-              {visibleItems.map((item) => renderCard(item))}
+              {finalItems.map((item) => renderCard(item))}
             </div>
           ) : (
             <div className="flex min-h-[40vh] items-center justify-center rounded-3xl border border-white/10 bg-white/5 px-6 text-center text-white/70 backdrop-blur-xl">
