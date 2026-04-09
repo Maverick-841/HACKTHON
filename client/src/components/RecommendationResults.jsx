@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const RecommendationResults = ({
   title,
@@ -14,6 +14,10 @@ const RecommendationResults = ({
   const [activeFilter, setActiveFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('title-asc');
+  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [shuffleSeed, setShuffleSeed] = useState(0);
+  const [copied, setCopied] = useState(false);
 
   const uniqueItems = useMemo(() => {
     const seen = new Set();
@@ -93,10 +97,86 @@ const RecommendationResults = ({
       return titleA.localeCompare(titleB);
     });
 
-    return sorted;
-  }, [searchedItems, sortBy]);
+    if (sortBy === 'random') {
+      const shuffled = [...sorted];
+      for (let i = shuffled.length - 1; i > 0; i -= 1) {
+        const j = Math.floor((((i + 1) * 9301 + shuffleSeed * 49297) % 233280) / 233280 * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
 
-  const hasActiveControls = effectiveFilter !== 'All' || searchTerm.trim() !== '' || sortBy !== 'title-asc';
+    return sorted;
+  }, [searchedItems, sortBy, shuffleSeed]);
+
+  const totalPages = Math.max(1, Math.ceil(finalItems.length / itemsPerPage));
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilter, searchTerm, sortBy, itemsPerPage]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  useEffect(() => {
+    if (!copied) {
+      return undefined;
+    }
+
+    const timeout = window.setTimeout(() => setCopied(false), 1800);
+    return () => window.clearTimeout(timeout);
+  }, [copied]);
+
+  const paginatedItems = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return finalItems.slice(start, start + itemsPerPage);
+  }, [currentPage, finalItems, itemsPerPage]);
+
+  const exportAsJson = () => {
+    const payload = {
+      title,
+      categoryLabel,
+      total: finalItems.length,
+      generatedAt: new Date().toISOString(),
+      recommendations: finalItems,
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${String(categoryLabel || 'recommendations').toLowerCase()}-recommendations.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const copyTitles = async () => {
+    const text = finalItems
+      .map((item, index) => `${index + 1}. ${item.title || 'Untitled'}${item.language ? ` (${item.language})` : ''}`)
+      .join('\n');
+
+    if (!text) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+    } catch (error) {
+      console.error('Copy failed:', error);
+    }
+  };
+
+  const hasActiveControls =
+    effectiveFilter !== 'All' ||
+    searchTerm.trim() !== '' ||
+    sortBy !== 'title-asc' ||
+    itemsPerPage !== 8;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B1020] to-[#0F172A] text-white pb-12">
@@ -191,8 +271,46 @@ const RecommendationResults = ({
                 <option value="title-desc">Title: Z to A</option>
                 <option value="language-asc">Language: A to Z</option>
                 <option value="language-desc">Language: Z to A</option>
+                <option value="random">Shuffle</option>
               </select>
             </label>
+          </div>
+
+          <div className="mt-3 grid gap-3 md:grid-cols-3">
+            <label>
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/60">
+                Items Per Page
+              </span>
+              <select
+                value={itemsPerPage}
+                onChange={(event) => setItemsPerPage(Number(event.target.value))}
+                className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-2.5 text-sm text-white outline-none transition focus:border-blue-300/60 focus:ring-2 focus:ring-blue-400/30"
+              >
+                <option value={4}>4</option>
+                <option value={8}>8</option>
+                <option value={12}>12</option>
+                <option value={16}>16</option>
+              </select>
+            </label>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSortBy('random');
+                setShuffleSeed((seed) => seed + 1);
+              }}
+              className="self-end rounded-xl border border-amber-300/20 bg-amber-400/10 px-4 py-2.5 text-sm font-medium text-amber-100 transition hover:bg-amber-400/20"
+            >
+              Shuffle Again
+            </button>
+
+            <button
+              type="button"
+              onClick={copyTitles}
+              className="self-end rounded-xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-2.5 text-sm font-medium text-emerald-100 transition hover:bg-emerald-400/20"
+            >
+              {copied ? 'Copied Titles' : 'Copy Titles'}
+            </button>
           </div>
 
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
@@ -201,18 +319,30 @@ const RecommendationResults = ({
               <span className="font-semibold text-white">{uniqueItems.length}</span> total recommendations
             </p>
 
-            <button
-              type="button"
-              onClick={() => {
-                setActiveFilter('All');
-                setSearchTerm('');
-                setSortBy('title-asc');
-              }}
-              disabled={!hasActiveControls}
-              className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Reset Controls
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={exportAsJson}
+                className="rounded-lg border border-blue-300/20 bg-blue-400/10 px-4 py-2 text-sm font-medium text-blue-100 transition hover:bg-blue-400/20"
+              >
+                Export JSON
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveFilter('All');
+                  setSearchTerm('');
+                  setSortBy('title-asc');
+                  setItemsPerPage(8);
+                  setCurrentPage(1);
+                }}
+                disabled={!hasActiveControls}
+                className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Reset Controls
+              </button>
+            </div>
           </div>
         </div>
 
@@ -222,9 +352,38 @@ const RecommendationResults = ({
               Loading recommendations...
             </div>
           ) : finalItems.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-              {finalItems.map((item) => renderCard(item))}
-            </div>
+            <>
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                {paginatedItems.map((item) => renderCard(item))}
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <p className="text-sm text-white/70">
+                  Page <span className="font-semibold text-white">{currentPage}</span> of{' '}
+                  <span className="font-semibold text-white">{totalPages}</span>
+                </p>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                    disabled={currentPage === 1}
+                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Previous
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                    disabled={currentPage === totalPages}
+                    className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </>
           ) : (
             <div className="flex min-h-[40vh] items-center justify-center rounded-3xl border border-white/10 bg-white/5 px-6 text-center text-white/70 backdrop-blur-xl">
               <div>
