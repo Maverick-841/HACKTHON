@@ -61,7 +61,7 @@ This installs dependencies for both client and server directories.
 Create a `.env` file in the `server` directory:
 ```env
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/hackathon
+MONGO_URI=mongodb://localhost:27017/hackathon
 JWT_SECRET=your_jwt_secret_key
 NODE_ENV=development
 ```

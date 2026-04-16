@@ -13,17 +13,29 @@ const app = express();
 
 connectDB();
 
+const envOrigins = (process.env.CLIENT_URLS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://127.0.0.1:5173",
   "http://127.0.0.1:5174",
   process.env.CLIENT_URL,
+  ...envOrigins,
 ].filter(Boolean);
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Allow server-to-server calls and local tools that do not send an Origin header.
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      return callback(new Error("CORS blocked: origin not allowed"));
+    },
     credentials: true,
   })
 );

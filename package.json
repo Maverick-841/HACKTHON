@@ -9,7 +9,7 @@
     "start": "npm --prefix server run start",
     "server": "npm --prefix server run start",
     "client": "npm --prefix client run dev",
-    "install": "npm install --prefix client && npm install --prefix server"
+    "setup": "npm install --prefix client && npm install --prefix server"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

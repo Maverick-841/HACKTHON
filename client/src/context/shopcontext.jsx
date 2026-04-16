@@ -5,6 +5,12 @@ import React, { createContext, useState, useContext } from "react";
 // 1️⃣ Create context
 export const ShopContext = createContext();
 
+const normalizeApiUrl = (rawUrl) => {
+  const fallback = "http://127.0.0.1:5000/api";
+  const base = (rawUrl || fallback).trim().replace(/\/+$/, "");
+  return base.endsWith("/api") ? base : `${base}/api`;
+};
+
 // 2️⃣ Create provider component                                   
 export const ShopProvider = ({ children }) => {
 
@@ -32,7 +38,7 @@ export const ShopProvider = ({ children }) => {
   const [aiResult, setAiResult] = useState(null);
 
   // Backend URL
-  const backendUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api';
+  const backendUrl = normalizeApiUrl(import.meta.env.VITE_API_URL);
 
   // Save token
   const saveToken = (newToken) => {
