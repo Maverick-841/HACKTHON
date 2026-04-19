@@ -6,7 +6,7 @@ import React, { createContext, useState, useContext } from "react";
 export const ShopContext = createContext();
 
 const normalizeApiUrl = (rawUrl) => {
-  const fallback = "http://127.0.0.1:5000/api";
+  const fallback = "/api";
   const base = (rawUrl || fallback).trim().replace(/\/+$/, "");
   return base.endsWith("/api") ? base : `${base}/api`;
 };

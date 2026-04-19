@@ -26,7 +26,7 @@ export function Login() {
         e.preventDefault();
         if (loading) return;
 
-        const apiBaseUrl = backendUrl || 'http://127.0.0.1:5000/api';
+        const apiBaseUrl = backendUrl || '/api';
         setLoading(true);
 
         try {

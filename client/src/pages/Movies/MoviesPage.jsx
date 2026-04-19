@@ -4,7 +4,7 @@ import { useShopContext } from "../../context/shopcontext";
 import RecommendationResults from "../../components/RecommendationResults";
 
 const MoviesPage = () => {
-  const { userPreferences } = useShopContext();
+  const { userPreferences, backendUrl } = useShopContext();
 
   const activeMood =
     userPreferences.selectedMood || localStorage.getItem("selectedMood");
@@ -21,7 +21,7 @@ const MoviesPage = () => {
   useEffect(() => {
     async function fetchAIMovies() {
       try {
-        const res = await fetch("http://localhost:5000/api/mood/recommend", {
+        const res = await fetch(`${backendUrl}/mood/recommend`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
